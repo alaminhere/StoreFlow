@@ -6,6 +6,7 @@ CREATE TABLE `Brand` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `slug` VARCHAR(191) NOT NULL,
+    `deletedAt` DATETIME(3) NULL,
 
     UNIQUE INDEX `Brand_id_storeId_key`(`id` ASC, `storeId` ASC),
     INDEX `Brand_storeId_idx`(`storeId` ASC),
@@ -22,6 +23,7 @@ CREATE TABLE `Category` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `slug` VARCHAR(191) NOT NULL,
+    `deletedAt` DATETIME(3) NULL,
 
     UNIQUE INDEX `Category_id_storeId_key`(`id` ASC, `storeId` ASC),
     INDEX `Category_storeId_idx`(`storeId` ASC),
@@ -270,10 +272,11 @@ CREATE TABLE `StoreMember` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `StoreMember_id_storeId_key`(`id` ASC, `storeId` ASC),
     INDEX `StoreMember_storeId_idx`(`storeId` ASC),
     UNIQUE INDEX `StoreMember_storeId_userId_key`(`storeId` ASC, `userId` ASC),
     INDEX `StoreMember_userId_idx`(`userId` ASC),
-    PRIMARY KEY (`id` ASC)
+    PRIMARY KEY (`storeId` ASC, `id` ASC)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable

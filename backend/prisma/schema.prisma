@@ -101,19 +101,21 @@ model Store {
   counters         Counter[]
 }
 
-model StoreMember {
-  id        String          @id @default(cuid())
-  storeId   String
-  userId    String
-  role      StoreMemberRole @default(SALESMAN)
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  model StoreMember {
+    id        String
+    storeId   String
+    userId    String
+    role      StoreMemberRole @default(SALESMAN)
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
 
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+    user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([storeId, userId])
-}
+    @@id([storeId, id])
+    @@unique([id, storeId])
+    @@unique([storeId, userId])
+  }
 
 model Category {
   id      String
