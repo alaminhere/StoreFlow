@@ -1,0 +1,235 @@
+import { prisma } from '../db/db.js';
+import ApiError from '../helpers/apiError.js';
+import sendResponse from '../helpers/sendResponse.js';
+import type { Request, Response, NextFunction } from 'express';
+import { COOKIE_NAMES } from '../constants/index.js';
+import { emitToUser } from '../helpers/socket/socket.js';
+import { clearCookieOptions } from '../helpers/CookieOptions.js';
+import { comparePassword, hashPassword } from '../helpers/password.js';
+import {
+  updatePasswordSchema,
+  updateProfileSchema,
+  userByEmailSchema,
+} from '../validations/user.validation.js';
+
+/*-----------------------------------------*
+ * returns the currently signed in user
+ * profile along with the stores they belong
+ * to and their role in each store
+ *-----------------------------------------*/
+export const getCurrentUser = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = res.locals.userId;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        address: true,
+        storeMembers: {
+          select: {
+            role: true,
+            store: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, 'User Not Found!');
+    }
+
+    const { storeMembers, ...userData } = user;
+    const formattedUser = {
+      ...userData,
+      stores: storeMembers.map(m => ({
+        id: m.store.id,
+        name: m.store.name,
+        email: m.store.email,
+        role: m.role,
+      })),
+    };
+    return sendResponse(
+      res,
+      200,
+      true,
+      'User fetched successfully',
+      formattedUser,
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*-----------------------------------------*
+ * looks up a user by email and returns
+ * their basic profile info
+ *-----------------------------------------*/
+export const userByEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = userByEmailSchema.parse(req.body);
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        address: true,
+      },
+    });
+    if (!user) {
+      throw new ApiError(404, 'User Not Found!');
+    }
+
+    return sendResponse(res, 200, true, 'User fetched successfully', user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*-----------------------------------------*
+ * updates the signed in user own profile
+ * with the submitted fields
+ *-----------------------------------------*/
+export const updateMyProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = updateProfileSchema.parse(req.body);
+    const updateData = Object.fromEntries(
+      Object.entries(data).filter(([, value]) => value !== undefined),
+    );
+
+    const userId = res.locals.userId;
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: updateData,
+    });
+
+    const storeId = res.locals.storeId;
+    emitToUser(storeId!, 'user:updated');
+
+    return sendResponse(res, 200, true, 'User profile updated successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*-----------------------------------------*
+ * changes the signed in user password
+ * after confirming the current one
+ *-----------------------------------------*/
+export const updateMyPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { currentPassword, newPassword } = updatePasswordSchema.parse(
+      req.body,
+    );
+
+    const userId = res.locals.userId;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        password: true,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, 'User not found!');
+    }
+
+    const isPasswordValid = await comparePassword(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new ApiError(400, 'Current password is incorrect!');
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: await hashPassword(newPassword),
+      },
+    });
+
+    emitToUser(userId!, 'user:updated');
+
+    return sendResponse(res, 200, true, 'Password updated successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*-----------------------------------------*
+ * deletes the signed in user account
+ * blocked if they still own a store
+ *-----------------------------------------*/
+export const deleteMyAccount = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = res.locals.userId;
+    const ownerStore = await prisma.storeMember.findFirst({
+      where: {
+        userId,
+        role: 'OWNER',
+      },
+    });
+
+    if (ownerStore) {
+      throw new ApiError(
+        400,
+        'You are an owner of a store. Please delete your store before deleting your account.',
+      );
+    }
+
+    await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+
+    res.clearCookie(COOKIE_NAMES.STORE, clearCookieOptions());
+    res.clearCookie(COOKIE_NAMES.AUTH, clearCookieOptions());
+
+    return sendResponse(res, 200, true, 'User account deleted successfully');
+  } catch (error) {
+    next(error);
+  }
+};
