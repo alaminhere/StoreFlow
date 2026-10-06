@@ -4,6 +4,7 @@ import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import storeRoutes from './store.routes.js';
 import brandRouters from './brand.routes.js';
+import categoryRouters from './category.routes.js';
 
 const rootRoutes = express.Router();
 
@@ -11,6 +12,7 @@ rootRoutes.use('/auth', authRoutes);
 rootRoutes.use('/user', userRoutes);
 rootRoutes.use('/store', storeRoutes);
 rootRoutes.use('/brand', brandRouters);
+rootRoutes.use('/category', categoryRouters);
 
 // dynamic auto query
 rootRoutes.get('/health', async (_req, res) => {
