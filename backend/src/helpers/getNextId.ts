@@ -1,8 +1,12 @@
 import type { IdPrefix } from '../constants/index.js';
 import { prisma } from '../db/db.js';
 
-export const getNextId = async (storeId: string, prefix: IdPrefix) => {
-  const counter = await prisma.counter.upsert({
+export const getNextId = async (
+  storeId: string,
+  prefix: IdPrefix,
+  db: Pick<typeof prisma, 'counter'> = prisma,
+) => {
+  const counter = await db.counter.upsert({
     where: {
       storeId_name: {
         storeId,
