@@ -1,0 +1,101 @@
+
+# Dependencies
+
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+
+# Environment Files
+
+.env
+.env.*
+!.env.example
+
+# Frontend / Backend environment files
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.*
+!/frontend/.env.example
+
+/backend/.env
+/backend/.env.*
+!/backend/.env.example
+
+
+# Testing
+
+coverage/
+
+
+# Next.js - Frontend
+
+/frontend/.next/
+/frontend/out/
+
+
+# Production Builds
+
+/frontend/build/
+/backend/dist/
+
+
+# TypeScript
+
+*.tsbuildinfo
+
+
+# Next.js generated type file
+/frontend/next-env.d.ts
+
+
+# Prisma
+# Generated Prisma Client
+/backend/src/generated/
+
+# Prisma local generated files if needed
+/backend/prisma/*.db
+/backend/prisma/*.db-journal
+
+
+# Debug Logs
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+
+# Misc
+
+.DS_Store
+*.pem
+
+
+# Vercel
+
+.vercel/
+
+# VS Code
+
+
+.vscode/
+
+# md
+/md/
+
+
+# Postman
+/postman/
+postman/
+*.postman_collection.json
+*.postman_environment.json
+
+#
+*.md
