@@ -127,10 +127,17 @@ const sendVerificationEmail = async (code: string, email: string) => {
   });
 
   if (error) {
-    throw new ApiError(
-      Number(error.statusCode) || 500,
-      error.message ?? 'Something went wrong!!',
-    );
+    const isInvalidEmail =
+      error.name === 'validation_error' ||
+      error.message?.toLowerCase().includes('invalid `to`');
+
+    if (isInvalidEmail) {
+      throw new ApiError(
+        400,
+        'Invalid email address. Please use a valid email.',
+      );
+    }
+    throw new ApiError(500, 'Could not send email. Please try again later.');
   }
 };
 
