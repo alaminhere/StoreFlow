@@ -1,0 +1,226 @@
+@import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Background & Structure */
+  --background: #f7f8fa;
+  --surface: #ffffff;
+  --border: #e3e7ed;
+
+  /* Text */
+  --text: #172033;
+  --text-muted: #667085;
+  --placeholder: #98a2b3;
+
+  /* Primary */
+  --primary: #c08a32;
+  --primary-hover: #a97425;
+
+  /* Sidebar */
+  --sidebar-active-bg: #f5efe3;
+  --sidebar-text: #344054;
+
+  /* Status */
+  --success: #12a474;
+  --success-bg: #dcfce7;
+
+  --warning: #d99017;
+  --warning-bg: #fff4d6;
+
+  --danger: #e04f5f;
+  --danger-bg: #ffe4e8;
+
+  /* Accent */
+  --accent: #5969b8;
+  --accent-bg: #e9ecfb;
+
+  /* Info */
+  --info: #3186a8;
+  --info-bg: #c0e1ebff;
+
+  /* Buttons */
+  --btn-primary-bg: var(--primary);
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: var(--surface);
+  --btn-secondary-text: var(--text);
+
+  --btn-danger-bg: var(--danger);
+  --btn-danger-text: #ffffff;
+
+  /* Shadow */
+  --shadow: 0 4px 18px rgba(23, 32, 51, 0.07);
+}
+
+.dark {
+  /* Background & Structure */
+  --background: #0b111b;
+  --surface: #121a27;
+  --border: #273243;
+
+  /* Text */
+  --text: #f4f6f8;
+  --text-muted: #98a2b3;
+  --placeholder: #667085;
+
+  /* Primary */
+  --primary: #d6a24a;
+  --primary-hover: #e2b461;
+
+  /* Sidebar */
+  --sidebar-active-bg: #28251d;
+  --sidebar-text: #aeb7c4;
+
+  /* Status */
+  --success: #3dd598;
+  --success-bg: #12a47426;
+
+  --warning: #f5c451;
+  --warning-bg: #d9901726;
+
+  --danger: #ff7185;
+  --danger-bg: #e04f5f26;
+
+  /* Accent */
+  --accent: #8795e5;
+  --accent-bg: #5969b826;
+
+  /* Info */
+  --info: #62c3df;
+  --info-bg: #3186a826;
+
+  /* Buttons */
+  --btn-primary-bg: var(--primary);
+  --btn-primary-text: #17120a;
+
+  --btn-secondary-bg: var(--surface);
+  --btn-secondary-text: var(--text);
+
+  --btn-danger-bg: var(--danger);
+  --btn-danger-text: #ffffff;
+
+  /* Shadow */
+  --shadow: 0 6px 28px rgba(0, 0, 0, 0.35);
+}
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-sidebar-active-bg: var(--sidebar-active-bg);
+  --color-sidebar-text: var(--sidebar-text);
+
+  --color-placeholder: var(--placeholder);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+
+  --color-accent: var(--accent);
+  --color-accent-bg: var(--accent-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+
+  --color-btn-primary-bg: var(--btn-primary-bg);
+  --color-btn-primary-text: var(--btn-primary-text);
+  --color-btn-secondary-bg: var(--btn-secondary-bg);
+  --color-btn-secondary-text: var(--btn-secondary-text);
+  --color-btn-danger-bg: var(--btn-danger-bg);
+  --color-btn-danger-text: var(--btn-danger-text);
+
+  --font-inter: var(--font-inter), sans-serif;
+  --font-dm-sans: var(--font-dm-sans), sans-serif;
+}
+
+.my-swal-popup {
+  border-radius: 16px;
+  background: var(--background);
+  color: var(--text-muted);
+}
+
+.my-swal-title {
+  color: var(--text);
+}
+
+.my-swal-button {
+  border-radius: 8px !important;
+  padding: 10px 24px !important;
+}
+
+html {
+  scrollbar-color: var(--success) transparent;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-dm-sans);
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+@layer base {
+  .app-container {
+    @apply px-5 py-8 md:py-10 w-full h-fit max-w-300 mx-auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-text font-inter leading-[1.2em];
+  }
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-5xl font-bold leading-[1.2em];
+  }
+  h2 {
+    @apply text-3xl md:text-4xl font-semibold;
+  }
+  h3 {
+    @apply text-[28px] font-semibold;
+  }
+  h4 {
+    @apply text-sm font-medium;
+  }
+  h5 {
+    @apply text-sm font-medium;
+  }
+
+  p {
+    @apply text-base text-text-muted font-dm-sans font-normal leading-normal tracking-normal;
+  }
+  .p14 {
+    @apply text-sm text-text-muted font-dm-sans font-normal leading-normal tracking-normal;
+  }
+  .p12 {
+    @apply text-xs text-text-muted font-dm-sans font-normal leading-normal tracking-normal;
+  }
+}
