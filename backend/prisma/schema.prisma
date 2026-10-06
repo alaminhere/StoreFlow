@@ -1,0 +1,399 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum StoreMemberRole {
+  OWNER
+  ADMIN
+  MANAGER
+  SALESMAN
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  BKASH
+  CARD
+}
+
+enum StockMovementType {
+  PURCHASE
+  SALE
+  RETURN
+  STOCK_IN
+  STOCK_OUT
+  DAMAGE
+}
+
+model Counter {
+  storeId String
+  name    String
+  value   Int    @default(0)
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@id([storeId, name])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String
+  password  String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  storeMembers StoreMember[]
+}
+
+model TempUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  phone        String
+  password     String
+  otp          String
+  otpExpiresAt DateTime
+}
+
+model TempForgotPassData {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  otp          String
+  otpExpiresAt DateTime
+  isVerified   Boolean  @default(false)
+}
+
+model Store {
+  id                String  @id @default(cuid())
+  name              String
+  email             String  @unique
+  phone             String
+  logo              Json?
+  tagline           String?
+  address           String
+  invoiceFooterNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members          StoreMember[]
+  categories       Category[]
+  brands           Brand[]
+  products         Product[]
+  suppliers        Supplier[]
+  customers        Customer[]
+  purchases        Purchase[]
+  sales            Sale[]
+  purchaseItems    PurchaseItem[]
+  saleItems        SaleItem[]
+  purchasePayments PurchasePayment[]
+  salePayments     SalePayment[]
+  stockMovements   StockMovement[]
+  productSuppliers ProductSupplier[]
+  counters         Counter[]
+}
+
+model StoreMember {
+  id        String          @id @default(cuid())
+  storeId   String
+  userId    String
+  role      StoreMemberRole @default(SALESMAN)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, userId])
+}
+
+model Category {
+  id      String
+  storeId String
+  name    String
+  slug    String
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@unique([storeId, name])
+  @@unique([storeId, slug])
+}
+
+model Brand {
+  id        String
+  storeId   String
+  name      String
+  slug      String
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@unique([storeId, name])
+  @@unique([storeId, slug])
+}
+
+model Product {
+  id                String
+  storeId           String
+  name              String
+  slug              String
+  image             Json?
+  sku               String
+  barcode           String?
+  categoryId        String
+  brandId           String
+  description       String?
+  price             Decimal   @db.Decimal(12, 2)
+  sellingPrice      Decimal   @db.Decimal(12, 2)
+  stock             Int       @default(0)
+  minimumStockLevel Int       @default(0)
+  deletedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  store    Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId, storeId], references: [id, storeId], onDelete: Restrict)
+  brand    Brand    @relation(fields: [brandId, storeId], references: [id, storeId], onDelete: Restrict)
+
+  suppliers      ProductSupplier[]
+  purchaseItems  PurchaseItem[]
+  saleItems      SaleItem[]
+  stockMovements StockMovement[]
+
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@unique([storeId, sku])
+  @@unique([storeId, barcode])
+  @@unique([storeId, slug])
+  @@index([storeId, categoryId])
+  @@index([storeId, brandId])
+  @@index([storeId, deletedAt])
+}
+
+model Supplier {
+  id        String
+  storeId   String
+  name      String
+  shopName  String?
+  phone     String
+  email     String?
+  address   String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  store     Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  products  ProductSupplier[]
+  purchases Purchase[]
+  payments  PurchasePayment[]
+
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@unique([storeId, phone])
+  @@index([storeId, name])
+}
+
+model ProductSupplier {
+  storeId    String
+  productId  String
+  supplierId String
+
+  store    Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId, storeId], references: [id, storeId], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId, storeId], references: [id, storeId], onDelete: Cascade)
+
+  @@id([storeId, productId, supplierId])
+}
+
+model Customer {
+  id        String
+  storeId   String
+  name      String
+  email     String?
+  phone     String
+  address   String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  store    Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  sales    Sale[]
+  payments SalePayment[]
+
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@unique([storeId, phone])
+  @@index([storeId, name])
+}
+
+model Purchase {
+  id            String
+  storeId       String
+  supplierId    String?
+  dueDate       DateTime?
+  paymentMethod PaymentMethod
+  subtotal      Decimal       @db.Decimal(12, 2)
+  discount      Decimal       @default(0) @db.Decimal(12, 2)
+  total         Decimal       @db.Decimal(12, 2)
+  paid          Decimal       @default(0) @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  supplier Supplier? @relation(fields: [supplierId, storeId], references: [id, storeId], onDelete: Restrict)
+
+  items          PurchaseItem[]
+  payments       PurchasePayment[]
+  stockMovements StockMovement[]
+
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@index([storeId, supplierId])
+}
+
+model PurchaseItem {
+  id          String  @id @default(cuid())
+  storeId     String
+  purchaseId  String
+  productId   String
+  productName String
+  quantity    Int
+  price       Decimal @db.Decimal(12, 2)
+  total       Decimal @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+
+  store    Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  purchase Purchase @relation(fields: [purchaseId, storeId], references: [id, storeId], onDelete: Cascade)
+  product  Product  @relation(fields: [productId, storeId], references: [id, storeId], onDelete: Restrict)
+
+  @@index([storeId, purchaseId])
+  @@index([storeId, productId])
+}
+
+model PurchasePayment {
+  id            String        @id @default(cuid())
+  storeId       String
+  supplierId    String?
+  purchaseId    String
+  amount        Decimal       @db.Decimal(12, 2)
+  paymentMethod PaymentMethod
+
+  createdAt DateTime @default(now())
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  supplier Supplier? @relation(fields: [supplierId, storeId], references: [id, storeId], onDelete: Restrict)
+  purchase Purchase  @relation(fields: [purchaseId, storeId], references: [id, storeId], onDelete: Cascade)
+
+  @@index([storeId, supplierId])
+  @@index([storeId, purchaseId])
+}
+
+model Sale {
+  id            String
+  storeId       String
+  customerId    String?
+  subtotal      Decimal       @db.Decimal(12, 2)
+  discount      Decimal       @default(0) @db.Decimal(12, 2)
+  total         Decimal       @db.Decimal(12, 2)
+  paid          Decimal       @default(0) @db.Decimal(12, 2)
+  paymentMethod PaymentMethod
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId, storeId], references: [id, storeId], onDelete: Restrict)
+
+  items          SaleItem[]
+  payments       SalePayment[]
+  stockMovements StockMovement[]
+
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@index([storeId, customerId])
+}
+
+model SaleItem {
+  id          String  @id @default(cuid())
+  storeId     String
+  saleId      String
+  productId   String
+  productName String
+  quantity    Int
+  price       Decimal @db.Decimal(12, 2)
+  total       Decimal @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+
+  store   Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  sale    Sale    @relation(fields: [saleId, storeId], references: [id, storeId], onDelete: Cascade)
+  product Product @relation(fields: [productId, storeId], references: [id, storeId], onDelete: Restrict)
+
+  @@index([storeId, saleId])
+  @@index([storeId, productId])
+}
+
+model SalePayment {
+  id            String        @id @default(cuid())
+  storeId       String
+  customerId    String?
+  saleId        String
+  amount        Decimal       @db.Decimal(12, 2)
+  paymentMethod PaymentMethod
+
+  createdAt DateTime @default(now())
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId, storeId], references: [id, storeId], onDelete: Restrict)
+  sale     Sale      @relation(fields: [saleId, storeId], references: [id, storeId], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([storeId, customerId])
+  @@index([storeId, saleId])
+}
+
+model StockMovement {
+  id          String            @id @default(cuid())
+  storeId     String
+  productId   String
+  type        StockMovementType
+  reason      String?
+  beforeStock Int
+  afterStock  Int
+  purchaseId  String?
+  saleId      String?
+
+  createdAt DateTime @default(now())
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product  Product   @relation(fields: [productId, storeId], references: [id, storeId], onDelete: Restrict)
+  purchase Purchase? @relation(fields: [purchaseId, storeId], references: [id, storeId], onDelete: Restrict)
+  sale     Sale?     @relation(fields: [saleId, storeId], references: [id, storeId], onDelete: Restrict)
+
+  @@index([storeId, productId])
+  @@index([storeId, type])
+  @@index([storeId, purchaseId])
+  @@index([storeId, saleId])
+}
