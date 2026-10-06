@@ -11,7 +11,7 @@ export const updateProfileSchema = z.object({
     .max(100, 'User name must be less than 100 characters')
     .optional(),
   email: z.string().trim().email('Invalid email address').optional(),
-  phone: z.string().trim().optional().optional(),
+  phone: z.string().trim().optional(),
   address: z
     .string()
     .trim()
