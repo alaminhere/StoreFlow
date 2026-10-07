@@ -18,7 +18,7 @@ export type PermissionModule =
   | 'PAYMENTS'
   | 'ANALYTICS'
   | 'NOTIFICATIONS'
-  | 'USERS_ROLES'
+  | 'MEMBER_ROLES'
   | 'SETTINGS';
 export type ModulePermissions = Partial<Record<PermissionAction, boolean>>;
 
