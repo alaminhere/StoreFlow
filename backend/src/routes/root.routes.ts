@@ -8,6 +8,7 @@ import categoryRouters from './category.routes.js';
 import customerRouters from './customer.routes.js';
 import supplierRouters from './supplier.routes.js';
 import storeMemberRouters from './storeMember.routes.js';
+import productRouters from './product.routes.js';
 
 const rootRoutes = express.Router();
 
@@ -19,6 +20,7 @@ rootRoutes.use('/category', categoryRouters);
 rootRoutes.use('/customer', customerRouters);
 rootRoutes.use('/supplier', supplierRouters);
 rootRoutes.use('/member', storeMemberRouters);
+rootRoutes.use('/product', productRouters);
 
 // dynamic auto query
 rootRoutes.get('/health', async (_req, res) => {
