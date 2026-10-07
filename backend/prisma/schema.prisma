@@ -101,21 +101,21 @@ model Store {
   counters         Counter[]
 }
 
-  model StoreMember {
-    id        String
-    storeId   String
-    userId    String
-    role      StoreMemberRole @default(SALESMAN)
-    createdAt DateTime        @default(now())
-    updatedAt DateTime        @updatedAt
+model StoreMember {
+  id        String
+  storeId   String
+  userId    String
+  role      StoreMemberRole @default(SALESMAN)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
-    store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-    user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@id([storeId, id])
-    @@unique([id, storeId])
-    @@unique([storeId, userId])
-  }
+  @@id([storeId, id])
+  @@unique([id, storeId])
+  @@unique([storeId, userId])
+}
 
 model Category {
   id      String
@@ -168,6 +168,7 @@ model Product {
   price             Decimal   @db.Decimal(12, 2)
   sellingPrice      Decimal   @db.Decimal(12, 2)
   stock             Int       @default(0)
+  isLowStock        Boolean   @default(false)
   minimumStockLevel Int       @default(0)
   deletedAt         DateTime?
   createdAt         DateTime  @default(now())
@@ -190,6 +191,7 @@ model Product {
   @@index([storeId, categoryId])
   @@index([storeId, brandId])
   @@index([storeId, deletedAt])
+  @@index([storeId, isLowStock])
 }
 
 model Supplier {
