@@ -5,164 +5,21 @@ export const permissions: PermissionResponse[] = [
     role: 'OWNER',
     permissions: {
       DASHBOARD: { view: true },
-
-      PRODUCTS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      CATEGORIES: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      BRANDS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      INVENTORY: { view: true },
-
-      MOVEMENTS: { view: true },
-
-      SUPPLIERS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      CUSTOMERS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      PURCHASES: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      POS: {
-        view: true,
-        create: true,
-      },
-
-      SALES_HISTORY: { view: true },
-
-      RETURNS: {
-        view: true,
-        create: true,
-        edit: true,
-      },
-
-      PAYMENTS: {
-        view: true,
-        create: true,
-      },
-
+      PRODUCTS: { view: true, create: true, edit: true, delete: true },
+      CATEGORIES: { view: true, create: true, edit: true, delete: true },
+      BRANDS: { view: true, create: true, edit: true, delete: true },
+      INVENTORY: { view: true, create: true, edit: true, delete: true },
+      MOVEMENTS: { view: true, create: true },
+      SUPPLIERS: { view: true, create: true, edit: true, delete: true },
+      CUSTOMERS: { view: true, create: true, edit: true, delete: true },
+      PURCHASES: { view: true, create: true, edit: true, delete: true },
+      POS: { view: true, create: true },
+      SALES_HISTORY: { view: true, edit: true, delete: true },
+      RETURNS: { view: true, create: true, edit: true, delete: true },
+      PAYMENTS: { view: true, create: true, edit: true, delete: true },
       ANALYTICS: { view: true },
-
       NOTIFICATIONS: { view: true },
-
-      USERS_ROLES: {
-        view: true,
-        create: true,
-        edit: true,
-      },
-
-      SETTINGS: { view: true, edit: true, delete: true },
-    },
-  },
-
-  {
-    role: 'MANAGER',
-    permissions: {
-      DASHBOARD: { view: true },
-
-      PRODUCTS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: false,
-      },
-
-      CATEGORIES: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: false,
-      },
-
-      BRANDS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: false,
-      },
-
-      INVENTORY: { view: true },
-
-      MOVEMENTS: { view: true },
-
-      SUPPLIERS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: false,
-      },
-
-      CUSTOMERS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: false,
-      },
-
-      PURCHASES: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: false,
-      },
-
-      POS: {
-        view: true,
-        create: true,
-      },
-
-      SALES_HISTORY: { view: true },
-
-      RETURNS: {
-        view: true,
-        create: true,
-        edit: true,
-      },
-
-      PAYMENTS: {
-        view: true,
-        create: true,
-      },
-
-      ANALYTICS: { view: true },
-
-      NOTIFICATIONS: { view: true },
-
-      USERS_ROLES: {
-        view: true,
-        create: false,
-        edit: false,
-      },
-
+      MEMBER_ROLES: { view: true, create: true, edit: true, delete: true },
       SETTINGS: { view: true, edit: true, delete: true },
     },
   },
@@ -171,81 +28,44 @@ export const permissions: PermissionResponse[] = [
     role: 'ADMIN',
     permissions: {
       DASHBOARD: { view: true },
-
-      PRODUCTS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      CATEGORIES: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      BRANDS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      INVENTORY: { view: true },
-
-      MOVEMENTS: { view: true },
-
-      SUPPLIERS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      CUSTOMERS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      PURCHASES: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: true,
-      },
-
-      POS: {
-        view: true,
-        create: true,
-      },
-
-      SALES_HISTORY: { view: true },
-
-      RETURNS: {
-        view: true,
-        create: true,
-        edit: true,
-      },
-
-      PAYMENTS: {
-        view: true,
-        create: true,
-      },
-
+      PRODUCTS: { view: true, create: true, edit: true, delete: true },
+      CATEGORIES: { view: true, create: true, edit: true, delete: true },
+      BRANDS: { view: true, create: true, edit: true, delete: true },
+      INVENTORY: { view: true, create: true, edit: true, delete: true },
+      MOVEMENTS: { view: true, create: true },
+      SUPPLIERS: { view: true, create: true, edit: true, delete: true },
+      CUSTOMERS: { view: true, create: true, edit: true, delete: true },
+      PURCHASES: { view: true, create: true, edit: true, delete: true },
+      POS: { view: true, create: true },
+      SALES_HISTORY: { view: true, edit: true },
+      RETURNS: { view: true, create: true, edit: true },
+      PAYMENTS: { view: true, create: true, edit: true },
       ANALYTICS: { view: true },
-
       NOTIFICATIONS: { view: true },
+      MEMBER_ROLES: { view: true, create: true, edit: true },
+      SETTINGS: { view: true, edit: true },
+    },
+  },
 
-      USERS_ROLES: {
-        view: true,
-        create: true,
-        edit: true,
-      },
-
+  {
+    role: 'MANAGER',
+    permissions: {
+      DASHBOARD: { view: true },
+      PRODUCTS: { view: true, create: true, edit: true },
+      CATEGORIES: { view: true, create: true, edit: true },
+      BRANDS: { view: true, create: true, edit: true },
+      INVENTORY: { view: true, create: true, edit: true },
+      MOVEMENTS: { view: true, create: true },
+      SUPPLIERS: { view: true, create: true, edit: true },
+      CUSTOMERS: { view: true, create: true, edit: true },
+      PURCHASES: { view: true, create: true, edit: true },
+      POS: { view: true, create: true },
+      SALES_HISTORY: { view: true, edit: true },
+      RETURNS: { view: true, create: true, edit: true },
+      PAYMENTS: { view: true, create: true },
+      ANALYTICS: { view: true },
+      NOTIFICATIONS: { view: true },
+      MEMBER_ROLES: { view: true },
       SETTINGS: { view: true },
     },
   },
@@ -254,82 +74,22 @@ export const permissions: PermissionResponse[] = [
     role: 'SALESMAN',
     permissions: {
       DASHBOARD: { view: true },
-
-      PRODUCTS: {
-        view: true,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-
-      CATEGORIES: {
-        view: true,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-
-      BRANDS: {
-        view: true,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-
+      PRODUCTS: { view: true },
+      CATEGORIES: { view: true },
+      BRANDS: { view: true },
       INVENTORY: { view: true },
-
       MOVEMENTS: { view: true },
-
-      SUPPLIERS: {
-        view: true,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-
-      CUSTOMERS: {
-        view: true,
-        create: true,
-        edit: true,
-        delete: false,
-      },
-
-      PURCHASES: {
-        view: false,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-
-      POS: {
-        view: true,
-        create: true,
-      },
-
+      SUPPLIERS: { view: true },
+      CUSTOMERS: { view: true, create: true },
+      PURCHASES: {},
+      POS: { view: true, create: true },
       SALES_HISTORY: { view: true },
-
-      RETURNS: {
-        view: true,
-        create: true,
-        edit: false,
-      },
-
-      PAYMENTS: {
-        view: false,
-        create: false,
-      },
-
-      ANALYTICS: { view: false },
-
+      RETURNS: { view: true, create: true },
+      PAYMENTS: {},
+      ANALYTICS: {},
       NOTIFICATIONS: { view: true },
-
-      USERS_ROLES: {
-        view: false,
-        create: false,
-        edit: false,
-      },
-
-      SETTINGS: { view: false },
+      MEMBER_ROLES: {},
+      SETTINGS: {},
     },
   },
 ];
