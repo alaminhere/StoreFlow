@@ -373,7 +373,6 @@ model SalePayment {
   customer Customer? @relation(fields: [customerId, storeId], references: [id, storeId], onDelete: Restrict)
   sale     Sale      @relation(fields: [saleId, storeId], references: [id, storeId], onDelete: Cascade)
 
-  @@index([storeId])
   @@index([storeId, customerId])
   @@index([storeId, saleId])
 }
