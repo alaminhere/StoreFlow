@@ -37,6 +37,7 @@ export const SOCKET_EVENTS = [
   'invoice:updated',
   'user:updated',
   'stockMovement:updated',
+  'return:updated',
 ] as const;
 
 export type SocketEvent = (typeof SOCKET_EVENTS)[number];
@@ -57,6 +58,7 @@ export const ID_PREFIX = {
   SALE_ITEM: 'sale_item',
   SALE_PAYMENT: 'sale_pay',
   STOCK_MOVEMENT: 'stock_mv',
+  RETURN: 'return',
 } as const;
 
 export type IdPrefix = (typeof ID_PREFIX)[keyof typeof ID_PREFIX];

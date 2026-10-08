@@ -27,6 +27,7 @@ enum StockMovementType {
   STOCK_IN
   STOCK_OUT
   DAMAGE
+  RETURN
 }
 
 enum ReturnType {
@@ -401,6 +402,7 @@ model StockMovement {
   afterStock  Int
   purchaseId  String?
   saleId      String?
+  returnId    String?
 
   createdAt DateTime @default(now())
 
