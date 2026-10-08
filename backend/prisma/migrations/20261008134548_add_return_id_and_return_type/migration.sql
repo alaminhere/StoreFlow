@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `StockMovement` ADD COLUMN `returnId` VARCHAR(191) NULL,
+    MODIFY `type` ENUM('PURCHASE', 'SALE', 'STOCK_IN', 'STOCK_OUT', 'DAMAGE', 'RETURN') NOT NULL;
