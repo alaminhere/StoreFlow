@@ -60,3 +60,12 @@ export const ID_PREFIX = {
 } as const;
 
 export type IdPrefix = (typeof ID_PREFIX)[keyof typeof ID_PREFIX];
+
+export const MOVEMENT_TYPES = {
+  PURCHASE: 'PURCHASE',
+  SALE: 'SALE',
+  RETURN: 'RETURN',
+  STOCK_IN: 'STOCK_IN',
+  STOCK_OUT: 'STOCK_OUT',
+  DAMAGE: 'DAMAGE',
+} as const;
