@@ -24,9 +24,18 @@ enum PaymentMethod {
 enum StockMovementType {
   PURCHASE
   SALE
-  RETURN
   STOCK_IN
   STOCK_OUT
+  DAMAGE
+}
+
+enum ReturnType {
+  SALE_RETURN
+  PURCHASE_RETURN
+}
+
+enum ReturnCondition {
+  RESTOCK
   DAMAGE
 }
 
@@ -99,6 +108,8 @@ model Store {
   stockMovements   StockMovement[]
   productSuppliers ProductSupplier[]
   counters         Counter[]
+  returns          Return[]
+  returnItems      ReturnItem[]
 }
 
 model StoreMember {
@@ -182,6 +193,7 @@ model Product {
   purchaseItems  PurchaseItem[]
   saleItems      SaleItem[]
   stockMovements StockMovement[]
+  returnItems    ReturnItem[]
 
   @@id([storeId, id])
   @@unique([id, storeId])
@@ -210,6 +222,7 @@ model Supplier {
   products  ProductSupplier[]
   purchases Purchase[]
   payments  PurchasePayment[]
+  returns   Return[]
 
   @@id([storeId, id])
   @@unique([id, storeId])
@@ -243,6 +256,7 @@ model Customer {
   store    Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
   sales    Sale[]
   payments SalePayment[]
+  returns  Return[]
 
   @@id([storeId, id])
   @@unique([id, storeId])
@@ -399,4 +413,43 @@ model StockMovement {
   @@index([storeId, type])
   @@index([storeId, purchaseId])
   @@index([storeId, saleId])
+}
+
+model Return {
+  id           String          @id @default(cuid())
+  storeId      String
+  type         ReturnType
+  referenceId  String
+  customerId   String?
+  supplierId   String?
+  reason       String
+  refundAmount Decimal         @db.Decimal(12, 2)
+  condition    ReturnCondition
+  createdAt    DateTime        @default(now())
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId, storeId], references: [id, storeId])
+  supplier Supplier? @relation(fields: [supplierId, storeId], references: [id, storeId])
+
+  items ReturnItem[]
+
+  @@index([storeId, type])
+  @@index([storeId, referenceId])
+}
+
+model ReturnItem {
+  id          String  @id @default(cuid())
+  storeId     String
+  returnId    String
+  productId   String
+  productName String
+  quantity    Int
+  price       Decimal @db.Decimal(12, 2)
+  total       Decimal @db.Decimal(12, 2)
+
+  return  Return  @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId, storeId], references: [id, storeId])
+  store   Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, returnId])
 }
