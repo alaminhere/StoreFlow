@@ -1,16 +1,20 @@
-import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
+import http from 'node:http';
+import express from 'express';
+import type { Server } from 'node:http';
 import config from './config/config.js';
+import cookieParser from 'cookie-parser';
+import { connectDB, prisma } from './db/db.js';
 import rootRoutes from './routes/root.routes.js';
 import notFound from './middlewares/notFound.js';
-import { errorConverter, errorHandler } from './middlewares/errorHandler.js';
-import { connectDB, prisma } from './db/db.js';
-import type { Server } from 'node:http';
-import http from 'node:http';
 import { initSocket } from './helpers/socket/socket.js';
+import { errorConverter, errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
+
+if (config.env === 'production') {
+  app.set('trust proxy', 1);
+}
 
 app.use(
   cors({
@@ -45,7 +49,7 @@ connectDB()
     });
   })
   .catch(error => {
-    console.log(`Failed to connect  to Database : ${error}`);
+    console.error(`Failed to connect  to Database : ${error}`);
     process.exit(1);
   });
 
@@ -76,5 +80,7 @@ process.on('SIGTERM', () => {
       await prisma.$disconnect();
       process.exit(0);
     });
+  } else {
+    process.exit(0);
   }
 });

@@ -8,18 +8,19 @@ import {
   resetPassword,
   signout,
 } from '../controllers/auth.controller.js';
+import { authLimiter, passwordLimiter } from '../middlewares/rateLimit.js';
 
 // auth route
 const authRoutes = express.Router();
 
-authRoutes.post('/signup', signup);
+authRoutes.post('/signup', authLimiter, signup);
 authRoutes.post('/verify-signup', verifySignup);
 
-authRoutes.post('/signin', signin);
+authRoutes.post('/signin', authLimiter, signin);
 
-authRoutes.post('/forgot-password', forgotPassword);
+authRoutes.post('/forgot-password', passwordLimiter, forgotPassword);
 authRoutes.post('/verify-forgot-password', verifyForgotPassword);
-authRoutes.post('/reset-password', resetPassword);
+authRoutes.post('/reset-password', passwordLimiter, resetPassword);
 
 authRoutes.post('/signout', signout);
 
