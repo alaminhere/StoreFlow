@@ -71,3 +71,14 @@ export const MOVEMENT_TYPES = {
   STOCK_OUT: 'STOCK_OUT',
   DAMAGE: 'DAMAGE',
 } as const;
+
+export const RANGES = [
+  { key: 'today', label: 'Today' },
+  { key: 'yesterday', label: 'Yesterday' },
+  { key: 'last7days', label: 'Last 7 Days' },
+  { key: 'last30days', label: 'Last 30 Days' },
+  { key: 'lastMonth', label: 'Last Month' },
+  { key: 'thisYear', label: 'This Year' },
+] as const;
+
+export type RangeKey = (typeof RANGES)[number]['key'];
