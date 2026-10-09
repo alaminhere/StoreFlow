@@ -91,7 +91,7 @@ export const getAllSupplier = async (
       };
       return {
         ...supplier,
-        totalSale: agg.totalPurchase,
+        totalPurchase: agg.totalPurchase,
         totalPaid: agg.totalPaid,
         totalDue: agg.totalPurchase - agg.totalPaid,
       };
@@ -128,6 +128,7 @@ export const suppliersList = async (
       select: {
         id: true,
         name: true,
+        email: true,
       },
     });
 

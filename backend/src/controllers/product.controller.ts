@@ -13,6 +13,7 @@ import {
   deleteProductSchema,
   updateProductSchema,
 } from '../validations/productValidation.js';
+import { deleteCloudinaryImage } from '../helpers/cloudinary/deleteCloudinaryImage.js';
 
 /*-----------------------------------------*
  * returns a paginated list of products for
@@ -25,7 +26,7 @@ export const getAllProduct = async (
   next: NextFunction,
 ) => {
   try {
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const { search, page, stock, category, brand } = req.query;
 
     const limit = PAGINATION.DEFAULT_LIMIT;
@@ -73,6 +74,7 @@ export const getAllProduct = async (
           sellingPrice: true,
           minimumStockLevel: true,
           isLowStock: true,
+          description: true,
           category: {
             select: { id: true, name: true, slug: true },
           },
@@ -88,7 +90,6 @@ export const getAllProduct = async (
     ]);
 
     const totalPage = Math.ceil(totalProducts / limit);
-
     return sendResponse(res, 200, true, 'Products fetched successfully', {
       products,
       totalPage,
@@ -234,6 +235,7 @@ export const updateProduct = async (
             id: true,
             stock: true,
             minimumStockLevel: true,
+            image: true,
           },
         }),
         data.category
@@ -309,10 +311,19 @@ export const updateProduct = async (
       }),
     };
 
-    await prisma.product.update({
-      where: { storeId_id: { storeId, id } },
-      data: updateData,
-    });
+    await Promise.all([
+      prisma.product.update({
+        where: { storeId_id: { storeId, id } },
+        data: updateData,
+      }),
+      data.image && existing.image
+        ? deleteCloudinaryImage(
+            (existing.image as { public_id: string; url: string }).public_id,
+          ).catch(err => {
+            console.error('Cloudinary Delete failed:', err.message);
+          })
+        : Promise.resolve(),
+    ]);
 
     emitToStore(storeId, 'product:updated');
     return sendResponse(res, 200, true, 'Product updated successfully');
@@ -363,6 +374,60 @@ export const deleteProduct = async (
       true,
       `${result.count} ${result.count > 1 ? 'products' : 'product'} deleted successfully`,
     );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*-----------------------------------------*
+ * returns all suppliers linked to a product
+ * for the current store.
+ *-----------------------------------------*/
+export const getProductSuppliers = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const storeId = res.locals.storeId!;
+    const { id } = req.params;
+
+    if (!id) {
+      throw new ApiError(400, 'Product ID is required');
+    }
+
+    const [product, links] = await Promise.all([
+      prisma.product.findFirst({
+        where: { storeId, id, deletedAt: null },
+        select: { id: true, name: true },
+      }),
+      prisma.productSupplier.findMany({
+        where: { storeId, productId: id },
+        include: {
+          supplier: {
+            select: {
+              id: true,
+              name: true,
+              shopName: true,
+              phone: true,
+              email: true,
+              address: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    if (!product) {
+      throw new ApiError(404, 'Product not found');
+    }
+
+    const suppliers = links.map(l => l.supplier);
+
+    return sendResponse(res, 200, true, 'Suppliers fetched successfully', {
+      productId: product.id,
+      suppliers,
+    });
   } catch (error) {
     next(error);
   }

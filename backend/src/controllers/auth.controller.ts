@@ -11,15 +11,13 @@ import {
 } from '../validations/auth.validation.js';
 import sendVerificationEmail from '../helpers/email/resend.js';
 import config from '../config/config.js';
-import { COOKIE_NAMES, ID_PREFIX, VERIFICATION } from '../constants/index.js';
+import { COOKIE_NAMES, VERIFICATION } from '../constants/index.js';
 import {
   buildCookieOptions,
   clearCookieOptions,
 } from '../helpers/CookieOptions.js';
 import sendResponse from '../helpers/sendResponse.js';
 import { comparePassword, hashPassword } from '../helpers/password.js';
-import { getNextId } from '../helpers/getNextId.js';
-import { email } from 'zod';
 
 /*-----------------------------------------*
  * handles user signup with email otp
@@ -131,7 +129,6 @@ export const verifySignup = async (
     });
 
     const expirationSeconds = config.jwt.accessExpirationSeconds;
-
     const auth_token = jwt.sign({ userId: user.id }, config.jwt.secret, {
       expiresIn: expirationSeconds,
     });
@@ -159,7 +156,6 @@ export const signin = async (
 ) => {
   try {
     const { email, password } = signinSchema.parse(req.body);
-
     const user = await prisma.user.findFirst({
       where: {
         email,
@@ -190,7 +186,6 @@ export const signin = async (
   }
 };
 
-// WHAT: Add forgot password OTP request flow
 /*-----------------------------------------*
  * forgot password flow => sends  an otp
  * to the user email and stores a temporary
@@ -315,8 +310,8 @@ export const resetPassword = async (
     if (!token) {
       throw new ApiError(401, 'Session expire!! try again.');
     }
-    const { password } = resetPasswordSchema.parse(req.body);
 
+    const { password } = resetPasswordSchema.parse(req.body);
     const jwtSecret = config.jwt.secret;
     const payload = jwt.verify(token, jwtSecret) as { email: string };
     const email = payload.email;
@@ -363,7 +358,6 @@ export const signout = async (
 ) => {
   try {
     const token = req.cookies[COOKIE_NAMES.AUTH];
-
     if (!token) {
       throw new ApiError(401, 'Authentication required!');
     }

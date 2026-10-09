@@ -7,7 +7,6 @@ import { emitToStore } from '../helpers/socket/socket.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { PAGINATION } from '../constants/index.js';
 
-
 /*-----------------------------------------*
  * Returns all supplier payments
  *-----------------------------------------*/
@@ -30,6 +29,22 @@ export const getAllSupplierPayments = async (
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
+        select: {
+          id: true,
+          supplierId: true,
+          purchaseId: true,
+          amount: true,
+          paymentMethod: true,
+          createdAt: true,
+          supplier: {
+            select: {
+              name: true,
+              address: true,
+              email: true,
+              phone: true,
+            },
+          },
+        },
       }),
       prisma.purchasePayment.count({ where: { storeId } }),
     ]);
@@ -60,9 +75,13 @@ export const getSupplierPayments = async (
       orderBy: { createdAt: 'desc' },
     });
 
-    return sendResponse(res, 200, true, 'Payments fetched successfully', {
+    return sendResponse(
+      res,
+      200,
+      true,
+      'Payments fetched successfully',
       payments,
-    });
+    );
   } catch (error) {
     next(error);
   }
@@ -85,9 +104,13 @@ export const getPurchasePayments = async (
       orderBy: { createdAt: 'desc' },
     });
 
-    return sendResponse(res, 200, true, 'Payments fetched successfully', {
+    return sendResponse(
+      res,
+      200,
+      true,
+      'Payments fetched successfully',
       payments,
-    });
+    );
   } catch (error) {
     next(error);
   }

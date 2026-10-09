@@ -22,7 +22,7 @@ export const getAllCategory = async (
   next: NextFunction,
 ) => {
   try {
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const { search, page } = req.query;
 
     const limit = PAGINATION.DEFAULT_LIMIT;
@@ -40,7 +40,6 @@ export const getAllCategory = async (
     }
 
     const skip = (currentPage - 1) * limit;
-
     const [categories, totalCategories] = await Promise.all([
       prisma.category.findMany({
         where: filter,
@@ -54,7 +53,6 @@ export const getAllCategory = async (
     ]);
 
     const totalPage = Math.ceil(totalCategories / limit);
-
     return sendResponse(res, 200, true, 'Categories fetched successfully', {
       categories,
       totalPage,
@@ -75,7 +73,6 @@ export const categoryList = async (
 ) => {
   try {
     const storeId = res.locals.storeId;
-
     const categories = await prisma.category.findMany({
       where: {
         storeId: storeId!,
@@ -112,7 +109,7 @@ export const createCategory = async (
 ) => {
   try {
     const { name } = createCategorySchema.parse(req.body);
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const slug = createSlug(name);
 
     // active category check
@@ -181,7 +178,7 @@ export const updateCategory = async (
   try {
     const { id } = req.params;
     const { name } = createCategorySchema.parse(req.body);
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const slug = createSlug(name);
 
     // duplicate name check
@@ -222,7 +219,7 @@ export const deleteCategory = async (
 ) => {
   try {
     const { ids } = deleteCategorySchema.parse(req.body);
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
 
     for (const categoryId of ids) {
       const category = await prisma.category.findFirst({
@@ -260,7 +257,6 @@ export const deleteCategory = async (
     }
 
     emitToStore(storeId, 'category:updated');
-
     return sendResponse(
       res,
       200,

@@ -6,7 +6,6 @@ import { emitToStore } from '../helpers/socket/socket.js';
 import { Prisma } from '../generated/prisma/client.js';
 import type { Request, Response, NextFunction } from 'express';
 import { computeIsLowStock } from '../helpers/computeIsLowStock.js';
-import { createSaleSchema } from '../validations/sale.validation.js';
 import { ID_PREFIX, MOVEMENT_TYPES, PAGINATION } from '../constants/index.js';
 import { createPurchaseSchema } from '../validations/purchases.validation.js';
 
@@ -45,7 +44,13 @@ export const getAllPurchases = async (
         take: limit,
         include: {
           supplier: {
-            select: { id: true, name: true, email: true, phone: true },
+            select: {
+              id: true,
+              name: true,
+              shopName: true,
+              email: true,
+              phone: true,
+            },
           },
           items: true,
         },
@@ -87,6 +92,81 @@ export const getAllPurchases = async (
 };
 
 /*-----------------------------------------*
+ * returns a single sale with its customer
+ * and line items for the current store.
+ *-----------------------------------------*/
+export const getPurchaseForReturn = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const storeId = res.locals.storeId!;
+    const { id } = req.params;
+    if (!id) throw new ApiError(400, 'Purchases ID is required');
+
+    const purchases = await prisma.purchase.findFirst({
+      where: { storeId, id },
+      include: {
+        supplier: {
+          select: { id: true, name: true, phone: true, email: true },
+        },
+        items: {
+          select: {
+            id: true,
+            productId: true,
+            productName: true,
+            quantity: true,
+            price: true,
+          },
+        },
+      },
+    });
+    if (!purchases) throw new ApiError(404, 'Purchases not found');
+
+    const returnedItems = await prisma.returnItem.groupBy({
+      by: ['productId'],
+      where: {
+        storeId,
+        return: { referenceId: id, type: 'PURCHASE_RETURN' },
+      },
+      _sum: { quantity: true },
+    });
+
+    const returnedMap = new Map(
+      returnedItems.map(r => [r.productId, r._sum.quantity ?? 0]),
+    );
+
+    const itemsWithReturnable = purchases.items.map(item => {
+      const alreadyReturned = returnedMap.get(item.productId) ?? 0;
+      const returnable = item.quantity - alreadyReturned;
+
+      return {
+        ...item,
+        alreadyReturned,
+        returnable,
+      };
+    });
+
+    return sendResponse(res, 200, true, 'Purchases fetched successfully', {
+      id: purchases.id,
+      party: {
+        name: purchases.supplier?.name,
+        phone: purchases.supplier?.phone,
+      },
+
+      total: purchases.total,
+      paid: purchases.paid,
+      due: purchases.total.minus(purchases.paid),
+      createdAt: purchases.createdAt,
+      items: itemsWithReturnable,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*-----------------------------------------*
  * creates a purchase with its line items,
  * increments product stock, and logs stock
  * movements — all inside one transaction.
@@ -100,6 +180,7 @@ export const createPurchases = async (
     const storeId = res.locals.storeId!;
     const data = createPurchaseSchema.parse(req.body);
     const productIds = data.items.map(i => i.productId);
+    const dueDate = data.dueDate ? new Date(data.dueDate) : null;
 
     const [supplier, products, purchaseId] = await Promise.all([
       prisma.supplier.findFirst({
@@ -162,6 +243,7 @@ export const createPurchases = async (
         data: {
           id: purchaseId,
           storeId,
+          dueDate: dueDate,
           supplierId: data.supplierId,
           subtotal: data.subtotal,
           discount: data.discount,
@@ -186,13 +268,19 @@ export const createPurchases = async (
           };
         }),
       });
+
+      const uniqueProductIds = [...new Set(productIds)];
+      await tx.productSupplier.createMany({
+        data: uniqueProductIds.map(productId => ({
+          storeId,
+          productId,
+          supplierId: data.supplierId,
+        })),
+        skipDuplicates: true,
+      });
     });
 
-    emitToStore(storeId, 'supplier:updated');
     emitToStore(storeId, 'purchase:updated');
-    emitToStore(storeId, 'product:updated');
-    emitToStore(storeId, 'stockMovement:updated');
-
     return sendResponse(res, 201, true, 'Purchase created successfully');
   } catch (error) {
     next(error);

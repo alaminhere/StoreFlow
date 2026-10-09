@@ -15,8 +15,14 @@ import movementRouters from './movement.routes.js';
 import paymentRouters from './payment.routes.js';
 import returnRouters from './return.routes.js';
 import dashboardRouters from './dashboard.routes.js';
+import { cleanupExpiredTempData } from '../controllers/cleanup.controller.js';
+import invoiceRoute from './invoice.routes.js';
+import { generalLimiter } from '../middlewares/rateLimit.js';
+import analyticsRouters from './analytics.routes.js';
 
 const rootRoutes = express.Router();
+
+rootRoutes.use(generalLimiter);
 
 rootRoutes.use('/auth', authRoutes);
 rootRoutes.use('/user', userRoutes);
@@ -33,11 +39,14 @@ rootRoutes.use('/movement', movementRouters);
 rootRoutes.use('/payment', paymentRouters);
 rootRoutes.use('/return', returnRouters);
 rootRoutes.use('/dashboard', dashboardRouters);
+rootRoutes.use('/analytics', analyticsRouters);
+rootRoutes.use('/invoices', invoiceRoute);
 
 // dynamic auto query
 rootRoutes.get('/health', async (_req, res) => {
   await prisma.$queryRaw`SELECT 1`;
   res.json({ status: 'ok' });
 });
+rootRoutes.get('/cleanUp', cleanupExpiredTempData);
 
 export default rootRoutes;

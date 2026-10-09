@@ -9,10 +9,10 @@ import percentChange from '../helpers/percentChange.js';
 import { months, sumByMonth } from '../helpers/monthlyAggregation.js';
 
 /*-----------------------------------------*
- * builds the dashboard overview — sales,
- * purchases, revenue, category split, and
- * payment method breakdown for the last six
- * months
+ * Returns dashboard overview:
+ * - Last 6 months sales/purchases/revenue (dynamic)
+ * - Payment methods breakdown (all time)
+ * - Top 4 categories by sales (all time)
  *-----------------------------------------*/
 export const getDashboardOverview = async (
   _req: Request,
@@ -24,7 +24,15 @@ export const getDashboardOverview = async (
     const now = dayjs().tz();
     const sixMonthsAgo = now.subtract(5, 'month').startOf('month').toDate();
 
-    // last 6 months data
+    const months = Array.from({ length: 6 }, (_, i) => {
+      const start = now.subtract(5 - i, 'month').startOf('month');
+      return {
+        label: start.format('MMM'),
+        start: start.valueOf(),
+        end: start.add(1, 'month').valueOf(),
+      };
+    });
+
     const [sales, purchases, salePayments] = await Promise.all([
       prisma.sale.findMany({
         where: { storeId, createdAt: { gte: sixMonthsAgo } },
@@ -44,7 +52,6 @@ export const getDashboardOverview = async (
     const purchasesByMonth = sumByMonth(purchases, 'total');
     const revenueByMonth = sumByMonth(salePayments, 'amount');
 
-    //payment methods
     const paymentGroups = await prisma.salePayment.groupBy({
       by: ['paymentMethod'],
       where: { storeId },
@@ -57,7 +64,6 @@ export const getDashboardOverview = async (
       value: Number(p._sum.amount ?? 0),
     }));
 
-    //top 4 categories
     const topCategories = await prisma.$queryRaw<
       Array<{ name: string; total: bigint }>
     >`
@@ -70,6 +76,7 @@ export const getDashboardOverview = async (
       ORDER BY total DESC
       LIMIT 4
     `;
+
     const topTotal = topCategories.reduce((s, c) => s + Number(c.total), 0);
 
     const salesByCategory = topCategories.map(c => ({
@@ -105,7 +112,7 @@ export const getDashboardCards = async (
 ) => {
   try {
     const storeId = res.locals.storeId!;
-    const data = req.params;
+    const data = req.query;
     const range = (data.range as RangeKey) || 'today';
     const { from, to, prevFrom, prevTo } = getDateRange(range);
 

@@ -5,6 +5,7 @@ import authorization from '../authentication/authorization.js';
 import {
   createPurchases,
   getAllPurchases,
+  getPurchaseForReturn,
 } from '../controllers/purchases.controller.js';
 
 const purchaseRouters = express.Router();
@@ -14,6 +15,12 @@ purchaseRouters.get(
   authentication,
   authorization('PURCHASES', 'view'),
   getAllPurchases,
+);
+purchaseRouters.get(
+  '/:id',
+  authentication,
+  authorization('PURCHASES', 'view'),
+  getPurchaseForReturn,
 );
 
 purchaseRouters.post(

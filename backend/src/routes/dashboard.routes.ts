@@ -8,5 +8,5 @@ import {
 const dashboardRouters = express.Router();
 
 dashboardRouters.get('/overview', authentication, getDashboardOverview);
-dashboardRouters.get('/cards/:range', authentication, getDashboardCards);
+dashboardRouters.get('/cards', authentication, getDashboardCards);
 export default dashboardRouters;

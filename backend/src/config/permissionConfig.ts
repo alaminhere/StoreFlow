@@ -85,7 +85,7 @@ export const permissions: PermissionResponse[] = [
       POS: { view: true, create: true },
       SALES_HISTORY: { view: true },
       RETURNS: { view: true, create: true },
-      PAYMENTS: {},
+      PAYMENTS: { create: true },
       ANALYTICS: {},
       NOTIFICATIONS: { view: true },
       MEMBER_ROLES: {},
