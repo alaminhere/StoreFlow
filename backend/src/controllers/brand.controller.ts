@@ -23,7 +23,7 @@ export const getAllBrand = async (
   next: NextFunction,
 ) => {
   try {
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const { search, page } = req.query;
 
     const limit = PAGINATION.DEFAULT_LIMIT;
@@ -82,7 +82,7 @@ export const brandList = async (
   next: NextFunction,
 ) => {
   try {
-    const storeId = res.locals.storeId;
+    const storeId = res.locals.storeId!;
 
     const brands = await prisma.brand.findMany({
       where: {
@@ -123,7 +123,7 @@ export const createBrand = async (
 ) => {
   try {
     const { name } = createBrandSchema.parse(req.body);
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const slug = createSlug(name);
 
     // active  check
@@ -191,7 +191,7 @@ export const updateBrand = async (
   try {
     const { id } = req.params;
     const { name } = createBrandSchema.parse(req.body);
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const slug = createSlug(name);
 
     const nameConflict = await prisma.brand.findFirst({
@@ -231,7 +231,7 @@ export const deleteBrand = async (
 ) => {
   try {
     const { ids } = deleteBrandSchema.parse(req.body);
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
 
     for (const brandId of ids) {
       const brand = await prisma.brand.findFirst({
@@ -269,12 +269,11 @@ export const deleteBrand = async (
     }
 
     emitToStore(storeId, 'brand:updated');
-
     return sendResponse(
       res,
       200,
       true,
-      `${result.count} brand${result.count > 1 ? 's' : ''} deleted successfully`,
+      `${result.count} ${result.count > 1 ? 'brands' : 'brand'} deleted successfully`,
     );
   } catch (error) {
     next(error);

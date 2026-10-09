@@ -145,6 +145,25 @@ const sendInvoiceEmail = async ({
   });
 
   if (error) {
+    const status = (error as { statusCode?: number })?.statusCode;
+    if (status === 422) {
+      throw new ApiError(
+        400,
+        'Invalid recipient email. Please use a real email address.',
+      );
+    }
+
+    if (status === 403) {
+      throw new ApiError(
+        400,
+        'Email domain is not verified. Please contact support.',
+      );
+    }
+
+    if (status === 429) {
+      throw new ApiError(429, 'Too many emails sent. Please try again later.');
+    }
+
     throw new ApiError(
       500,
       'Could not send invoice email. Please try again later.',

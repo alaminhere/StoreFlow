@@ -2,13 +2,6 @@ import express from 'express';
 import authentication from '../authentication/authentication.js';
 import authorization from '../authentication/authorization.js';
 import {
-  createCustomers,
-  customersList,
-  deleteCustomer,
-  getAllCustomer,
-  updateCustomer,
-} from '../controllers/customers.controller.js';
-import {
   createStoreMember,
   deleteStoreMember,
   getCurrentStoreMember,

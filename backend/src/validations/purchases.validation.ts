@@ -18,9 +18,14 @@ export const purchaseItemSchema = z
     message: 'Item total must equal quantity × price',
     path: ['total'],
   });
+
 export const createPurchaseSchema = z
   .object({
     supplierId: z.string().trim().min(1, 'supplier is required'),
+    dueDate: z
+      .string()
+      .datetime({ message: 'Invalid date format' })
+      .or(z.literal('')),
     items: z.array(purchaseItemSchema).min(1, 'At least one item is required'),
     paymentMethod: z.nativeEnum(PaymentMethod, {
       message: 'Payment method must be CASH, BANK_TRANSFER, BKASH, or CARD',

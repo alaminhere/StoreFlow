@@ -86,6 +86,81 @@ export const getAllSale = async (
 };
 
 /*-----------------------------------------*
+ * returns a single sale with its customer
+ * and line items for the current store.
+ *-----------------------------------------*/
+export const getSaleForReturn = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const storeId = res.locals.storeId!;
+    const { id } = req.params;
+    if (!id) throw new ApiError(400, 'Sale ID is required');
+
+    const sale = await prisma.sale.findFirst({
+      where: { storeId, id },
+      include: {
+        customer: {
+          select: { name: true, phone: true },
+        },
+        items: {
+          select: {
+            id: true,
+            productId: true,
+            productName: true,
+            quantity: true,
+            price: true,
+          },
+        },
+      },
+    });
+
+    if (!sale) throw new ApiError(404, 'Sale not found');
+
+    const returnedItems = await prisma.returnItem.groupBy({
+      by: ['productId'],
+      where: {
+        storeId,
+        return: { referenceId: id, type: 'SALE_RETURN' },
+      },
+      _sum: { quantity: true },
+    });
+
+    const returnedMap = new Map(
+      returnedItems.map(r => [r.productId, r._sum.quantity ?? 0]),
+    );
+
+    const itemsWithReturnable = sale.items.map(item => {
+      const alreadyReturned = returnedMap.get(item.productId) ?? 0;
+      const returnable = item.quantity - alreadyReturned;
+
+      return {
+        ...item,
+        alreadyReturned,
+        returnable,
+      };
+    });
+
+    return sendResponse(res, 200, true, 'Sale fetched successfully', {
+      id: sale.id,
+      party: {
+        name: sale.customer?.name,
+        phone: sale.customer?.phone,
+      },
+      total: sale.total,
+      paid: sale.paid,
+      due: sale.total.minus(sale.paid),
+      createdAt: sale.createdAt,
+      items: itemsWithReturnable,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*-----------------------------------------*
  * creates a sale with its line items,
  * decrements product stock, and logs stock
  * movements — all inside one transaction.
@@ -215,9 +290,6 @@ export const createSale = async (
     };
 
     emitToStore(storeId, 'sale:updated');
-    emitToStore(storeId, 'product:updated');
-    emitToStore(storeId, 'stockMovement:updated');
-
     return sendResponse(res, 201, true, 'Sale created successfully', result);
   } catch (error) {
     next(error);

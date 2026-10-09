@@ -24,13 +24,29 @@ export const getAllCustomerPayments = async (
     const skip = (currentPage - 1) * limit;
 
     const [payments, total] = await Promise.all([
-      prisma.sale.findMany({
+      prisma.salePayment.findMany({
         where: { storeId },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
+        select: {
+          id: true,
+          customerId: true,
+          saleId: true,
+          amount: true,
+          paymentMethod: true,
+          createdAt: true,
+          customer: {
+            select: {
+              name: true,
+              address: true,
+              email: true,
+              phone: true,
+            },
+          },
+        },
       }),
-      prisma.sale.count({ where: { storeId } }),
+      prisma.salePayment.count({ where: { storeId } }),
     ]);
 
     return sendResponse(res, 200, true, 'Payments fetched successfully', {

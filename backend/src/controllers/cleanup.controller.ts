@@ -14,7 +14,6 @@ export const cleanupExpiredTempData = async (
 ) => {
   try {
     const now = new Date();
-
     await prisma.tempUser.deleteMany({
       where: {
         otpExpiresAt: {

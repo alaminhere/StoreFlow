@@ -24,58 +24,61 @@ export const getCurrentUser = async (
 ) => {
   try {
     const userId = res.locals.userId;
+    const storeId = res.locals.storeId;
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        address: true,
-        storeMembers: {
-          select: {
-            role: true,
-            store: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
+    const [user, memberships, allStores] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          address: true,
         },
-      },
-    });
+      }),
+      prisma.storeMember.findMany({
+        where: { userId },
+        select: { storeId: true, role: true },
+      }),
+      prisma.store.findMany({
+        where: { members: { some: { userId } } },
+        select: { id: true, name: true, email: true },
+      }),
+    ]);
 
     if (!user) {
       throw new ApiError(404, 'User Not Found!');
     }
 
-    const { storeMembers, ...userData } = user;
-    const formattedUser = {
-      ...userData,
-      stores: storeMembers.map(m => ({
-        id: m.store.id,
-        name: m.store.name,
-        email: m.store.email,
-        role: m.role,
-      })),
-    };
-    return sendResponse(
-      res,
-      200,
-      true,
-      'User fetched successfully',
-      formattedUser,
-    );
+    const storeMap = new Map(allStores.map(s => [s.id, s]));
+    const stores = memberships.flatMap(m => {
+      const store = storeMap.get(m.storeId);
+      if (!store) return [];
+
+      return [
+        {
+          id: store.id,
+          name: store.name,
+          email: store.email,
+          role: m.role,
+        },
+      ];
+    });
+
+    const currentStore = storeId
+      ? (stores.find(s => s.id === storeId) ?? null)
+      : null;
+
+    return sendResponse(res, 200, true, 'User fetched successfully', {
+      ...user,
+      currentStore,
+      stores,
+    });
   } catch (error) {
     next(error);
   }
 };
-
 /*-----------------------------------------*
  * looks up a user by email and returns
  * their basic profile info
@@ -94,7 +97,6 @@ export const userByEmail = async (
         name: true,
         email: true,
         phone: true,
-        address: true,
       },
     });
     if (!user) {

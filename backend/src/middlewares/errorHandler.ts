@@ -1,9 +1,10 @@
-import type { Request, Response, NextFunction } from 'express';
-import ApiError from '../helpers/apiError.js';
+import multer from 'multer';
+import { ZodError } from 'zod';
 import httpStatus from 'http-status';
 import config from '../config/config.js';
-import { ZodError } from 'zod';
+import ApiError from '../helpers/apiError.js';
 import { Prisma } from '../generated/prisma/client.js';
+import type { Request, Response, NextFunction } from 'express';
 
 export const errorConverter = (
   err: unknown,
@@ -12,8 +13,26 @@ export const errorConverter = (
   next: NextFunction,
 ) => {
   let error = err;
+  if (
+    error instanceof SyntaxError &&
+    'status' in error &&
+    error.status === 400
+  ) {
+    error = new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid JSON payload',
+      true,
+      error.stack,
+    );
+  }
 
-  // Prisma validation error
+  if (error instanceof multer.MulterError) {
+    const message =
+      error.code === 'LIMIT_FILE_SIZE'
+        ? 'File is too large (max 5MB)'
+        : 'File upload failed';
+    error = new ApiError(httpStatus.BAD_REQUEST, message, true, error.stack);
+  }
   if (error instanceof Prisma.PrismaClientValidationError) {
     error = new ApiError(
       httpStatus.BAD_REQUEST,
@@ -23,7 +42,6 @@ export const errorConverter = (
     );
   }
 
-  // Prisma known request error
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     switch (error.code) {
       case 'P2002':
@@ -63,19 +81,14 @@ export const errorConverter = (
     }
   }
 
-  // Zod validation error
   if (error instanceof ZodError) {
     const message = error.issues.map(issue => issue.message).join(', ');
     error = new ApiError(httpStatus.BAD_REQUEST, message, true, error.stack);
   }
 
-  // Unknown / unexpected error
+  // unexpected error
   if (!(error instanceof ApiError)) {
-    const statusCode =
-      error instanceof Error
-        ? httpStatus.INTERNAL_SERVER_ERROR
-        : httpStatus.BAD_REQUEST;
-
+    const statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     const message =
       error instanceof Error ? error.message : 'Something went wrong';
     const stack = error instanceof Error ? error.stack : undefined;
@@ -100,8 +113,6 @@ export const errorHandler = (
 
   if (config.env === 'development') {
     console.log('DevError:', err);
-    console.log('DevError Message:', err.message);
-    console.log('DevError Stack:', err.stack);
   }
 
   res.status(statusCode).json({
