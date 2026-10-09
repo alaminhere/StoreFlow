@@ -20,6 +20,7 @@ app.use(
   cors({
     origin: config.clientUrl,
     credentials: true,
+    maxAge: config.env === 'production' ? 7200 : 10,
   }),
 );
 

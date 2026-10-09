@@ -21,7 +21,7 @@ export const getAllCustomer = async (
   next: NextFunction,
 ) => {
   try {
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
     const { search, page } = req.query;
 
     const limit = PAGINATION.DEFAULT_LIMIT;
@@ -57,10 +57,7 @@ export const getAllCustomer = async (
       prisma.customer.count({ where: filter }),
     ]);
 
-    // Get all customer IDs
     const customerIds = customers.map(c => c.id);
-
-    // Aggregate sales per customer
     const salesAgg = await prisma.sale.groupBy({
       by: ['customerId'],
       where: {
@@ -73,7 +70,7 @@ export const getAllCustomer = async (
       },
     });
 
-    // Build a map
+    // build a map
     const salesMap = new Map(
       salesAgg.map(s => [
         s.customerId,
@@ -83,9 +80,6 @@ export const getAllCustomer = async (
         },
       ]),
     );
- 
-
-    // Merge
     const formattedCustomers = customers.map(customer => {
       const agg = salesMap.get(customer.id) || {
         totalSale: 0,
@@ -100,7 +94,6 @@ export const getAllCustomer = async (
     });
 
     const totalPage = Math.ceil(totalCustomers / limit);
-
     return sendResponse(res, 200, true, 'Customers fetched successfully', {
       customers: formattedCustomers,
       totalPage,
@@ -120,7 +113,6 @@ export const customersList = async (
 ) => {
   try {
     const storeId = res.locals.storeId;
-
     const customers = await prisma.customer.findMany({
       where: {
         storeId: storeId!,
@@ -159,8 +151,8 @@ export const createCustomers = async (
     const { name, phone, email, address } = createCustomerSchema.parse(
       req.body,
     );
-    const storeId = res.locals.storeId ?? '';
 
+    const storeId = res.locals.storeId!;
     // active customer check
     const existsCustomer = await prisma.customer.findFirst({
       where: {
@@ -236,7 +228,7 @@ export const updateCustomer = async (
     const { name, phone, email, address } = createCustomerSchema.parse(
       req.body,
     );
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
 
     // duplicate phone check
     const phoneConflict = await prisma.customer.findFirst({
@@ -280,7 +272,7 @@ export const deleteCustomer = async (
 ) => {
   try {
     const { ids } = deleteCustomerSchema.parse(req.body);
-    const storeId = res.locals.storeId ?? '';
+    const storeId = res.locals.storeId!;
 
     for (const customerId of ids) {
       const customer = await prisma.customer.findFirst({

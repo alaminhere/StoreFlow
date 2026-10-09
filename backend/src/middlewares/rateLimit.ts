@@ -7,10 +7,21 @@ const jsonError = (message: string) => ({
 
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  limit: 5000,
   standardHeaders: true,
   legacyHeaders: false,
-  message: jsonError('Too many requests, please try again later'),
+  message: jsonError('Too many requests, please try again after 15 minutes'),
+});
+
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  message: jsonError(
+    'Too many login attempts, please try again after 15 minutes',
+  ),
 });
 
 export const emailLimiter = rateLimit({
@@ -22,22 +33,15 @@ export const emailLimiter = rateLimit({
     const userId = res.locals?.userId;
     return userId ? `user:${userId}` : ipKeyGenerator(req.ip ?? '');
   },
-  message: jsonError('Too many email requests, try again after 1 hour'),
-});
-
-export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipSuccessfulRequests: true,
-  message: jsonError('Too many login attempts, try again after 15 minutes'),
+  message: jsonError('Too many email requests, please try again after 1 hour'),
 });
 
 export const passwordLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  limit: 5,
+  limit: 15,
   standardHeaders: true,
   legacyHeaders: false,
-  message: jsonError('Too many password reset requests, try again later'),
+  message: jsonError(
+    'Too many password reset requests, please try again after 1 hour',
+  ),
 });

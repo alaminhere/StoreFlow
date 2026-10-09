@@ -27,7 +27,7 @@ const sendVerificationEmail = async (code: string, email: string) => {
     .join('');
 
   const { error } = await resend.emails.send({
-    from: 'StoreFlow <noreply@alaminhere.com>',
+    from: `StoreFlow <noreply@${config.email.from}>`,
     to: email,
     subject: 'Verify Your Account',
     text: `Your verification code is: ${code}`,
@@ -127,17 +127,29 @@ const sendVerificationEmail = async (code: string, email: string) => {
   });
 
   if (error) {
-    const isInvalidEmail =
-      error.name === 'validation_error' ||
-      error.message?.toLowerCase().includes('invalid `to`');
-
-    if (isInvalidEmail) {
+    const status = (error as { statusCode?: number })?.statusCode;
+    if (status === 422) {
       throw new ApiError(
         400,
-        'Invalid email address. Please use a valid email.',
+        'Invalid recipient email. Please use a real email address.',
       );
     }
-    throw new ApiError(500, 'Could not send email. Please try again later.');
+
+    if (status === 403) {
+      throw new ApiError(
+        400,
+        'Email domain is not verified. Please contact support.',
+      );
+    }
+
+    if (status === 429) {
+      throw new ApiError(429, 'Too many emails sent. Please try again later.');
+    }
+
+    throw new ApiError(
+      500,
+      'Could not send invoice email. Please try again later.',
+    );
   }
 };
 

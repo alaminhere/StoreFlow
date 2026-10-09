@@ -31,8 +31,15 @@ export const createReturn = async (
             where: { storeId_id: { storeId, id: data.referenceId } },
             select: {
               customerId: true,
+              total: true,
+              paid: true,
               items: {
-                select: { productId: true, quantity: true, price: true },
+                select: {
+                  productId: true,
+                  productName: true,
+                  quantity: true,
+                  price: true,
+                },
               },
             },
           })
@@ -40,8 +47,15 @@ export const createReturn = async (
             where: { storeId_id: { storeId, id: data.referenceId } },
             select: {
               supplierId: true,
+              total: true,
+              paid: true,
               items: {
-                select: { productId: true, quantity: true, price: true },
+                select: {
+                  productId: true,
+                  productName: true,
+                  quantity: true,
+                  price: true,
+                },
               },
             },
           }),
@@ -56,11 +70,24 @@ export const createReturn = async (
       throw new ApiError(404, isSale ? 'Sale not found' : 'Purchase not found');
     }
 
+    const returnedItems = await prisma.returnItem.groupBy({
+      by: ['productId'],
+      where: {
+        storeId,
+        return: { referenceId: data.referenceId, type: data.type },
+      },
+      _sum: { quantity: true },
+    });
+
+    const returnedMap = new Map(
+      returnedItems.map(r => [r.productId, r._sum.quantity ?? 0]),
+    );
+
     const productMap = new Map(products.map(p => [p.id, p]));
     const originalItemsMap = new Map(
       reference.items.map(i => [
         i.productId,
-        { quantity: i.quantity, price: i.price },
+        { quantity: i.quantity, price: i.price, productName: i.productName },
       ]),
     );
 
@@ -80,10 +107,13 @@ export const createReturn = async (
         );
       }
 
-      if (item.quantity > original.quantity) {
+      const alreadyReturned = returnedMap.get(item.productId) ?? 0;
+      const returnable = original.quantity - alreadyReturned;
+
+      if (item.quantity > returnable) {
         throw new ApiError(
           400,
-          `Cannot return ${item.quantity} of '${product.name}'`,
+          `Cannot return ${item.quantity} of '${original.productName}'. Max: ${returnable}`,
         );
       }
 
@@ -94,7 +124,7 @@ export const createReturn = async (
         storeId,
         returnId: newId,
         productId: item.productId,
-        productName: product.name,
+        productName: original.productName,
         quantity: item.quantity,
         price: original.price,
         total,
@@ -103,78 +133,179 @@ export const createReturn = async (
 
     const customerId = 'customerId' in reference ? reference.customerId : null;
     const supplierId = 'supplierId' in reference ? reference.supplierId : null;
-    await prisma.$transaction(async tx => {
-      await tx.return.create({
-        data: {
-          id: newId,
-          storeId,
-          type: data.type,
-          referenceId: data.referenceId,
-          customerId: customerId,
-          supplierId: supplierId,
-          reason: data.reason,
-          refundAmount,
-          condition: data.condition,
-        },
-      });
 
-      await tx.returnItem.createMany({ data: returnItems });
+    const { result, adjustedDue, cashRefund, remainingDue } =
+      await prisma.$transaction(async tx => {
+        await tx.return.create({
+          data: {
+            id: newId,
+            storeId,
+            type: data.type,
+            referenceId: data.referenceId,
+            customerId,
+            supplierId,
+            reason: data.reason,
+            refundAmount,
+            condition: data.condition,
+          },
+        });
+        await tx.returnItem.createMany({ data: returnItems });
 
-      if (data.condition === 'RESTOCK') {
-        const movements = [];
+        if (data.condition === 'RESTOCK') {
+          const movements = [];
 
-        for (const item of data.items) {
-          const p = productMap.get(item.productId)!;
+          for (const item of data.items) {
+            const p = productMap.get(item.productId)!;
 
-          const updated = await tx.product.updateMany({
-            where: {
+            const updated = await tx.product.updateMany({
+              where: {
+                storeId,
+                id: item.productId,
+                ...(isSale ? {} : { stock: { gte: item.quantity } }),
+              },
+              data: {
+                stock: isSale
+                  ? { increment: item.quantity }
+                  : { decrement: item.quantity },
+                isLowStock: computeIsLowStock(
+                  isSale ? p.stock + item.quantity : p.stock - item.quantity,
+                  p.minimumStockLevel,
+                ),
+              },
+            });
+
+            if (updated.count === 0) {
+              throw new ApiError(400, `insufficient stock for '${p.name}'`);
+            }
+
+            movements.push({
               storeId,
-              id: item.productId,
-              ...(isSale ? {} : { stock: { gte: item.quantity } }),
-            },
-            data: {
-              stock: isSale
-                ? { increment: item.quantity }
-                : { decrement: item.quantity },
-              isLowStock: computeIsLowStock(
-                isSale ? p.stock + item.quantity : p.stock - item.quantity,
-                p.minimumStockLevel,
-              ),
-            },
-          });
-
-          if (updated.count === 0) {
-            throw new ApiError(400, `insufficient stock for '${p.name}'`);
+              productId: item.productId,
+              type: 'RETURN' as const,
+              reason: data.reason,
+              beforeStock: p.stock,
+              afterStock: isSale
+                ? p.stock + item.quantity
+                : p.stock - item.quantity,
+              returnId: newId,
+            });
           }
 
-          movements.push({
-            storeId,
-            productId: item.productId,
-            type: 'RETURN' as const,
-            reason: data.reason,
-            beforeStock: p.stock,
-            afterStock: isSale
-              ? p.stock + item.quantity
-              : p.stock - item.quantity,
-            returnId: newId,
-          });
+          await tx.stockMovement.createMany({ data: movements });
         }
 
-        await tx.stockMovement.createMany({ data: movements });
-      }
-    });
+        const dueAmount = reference.total.minus(reference.paid);
+        const adjustedDue = dueAmount.greaterThan(0)
+          ? Prisma.Decimal.min(dueAmount, refundAmount)
+          : new Prisma.Decimal(0);
+
+        if (adjustedDue.greaterThan(0)) {
+          if (isSale) {
+            await tx.salePayment.create({
+              data: {
+                storeId,
+                customerId,
+                saleId: data.referenceId,
+                amount: adjustedDue,
+                paymentMethod: 'RETURN_ADJUSTMENT',
+              },
+            });
+            await tx.sale.update({
+              where: { storeId_id: { storeId, id: data.referenceId } },
+              data: { paid: { increment: adjustedDue } },
+            });
+          } else {
+            await tx.purchasePayment.create({
+              data: {
+                storeId,
+                supplierId,
+                purchaseId: data.referenceId,
+                amount: adjustedDue,
+                paymentMethod: 'RETURN_ADJUSTMENT',
+              },
+            });
+            await tx.purchase.update({
+              where: { storeId_id: { storeId, id: data.referenceId } },
+              data: { paid: { increment: adjustedDue } },
+            });
+          }
+        }
+
+        const cashRefund = refundAmount.minus(adjustedDue);
+        const remainingDue = dueAmount.minus(adjustedDue);
+
+        const fetched = await tx.return.findUniqueOrThrow({
+          where: { id: newId, storeId },
+          select: {
+            id: true,
+            type: true,
+            reason: true,
+            condition: true,
+            refundAmount: true,
+            createdAt: true,
+            items: {
+              select: {
+                id: true,
+                productName: true,
+                quantity: true,
+                price: true,
+                total: true,
+              },
+            },
+            customer: isSale
+              ? {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phone: true,
+                    address: true,
+                  },
+                }
+              : false,
+            supplier: !isSale
+              ? {
+                  select: {
+                    id: true,
+                    name: true,
+                    shopName: true,
+                    phone: true,
+                    email: true,
+                    address: true,
+                  },
+                }
+              : false,
+          },
+        });
+        return { result: fetched, adjustedDue, cashRefund, remainingDue };
+      });
 
     emitToStore(storeId, 'return:updated');
+    if (adjustedDue.greaterThan(0)) {
+      emitToStore(
+        storeId,
+        isSale ? 'payment_sale:updated' : 'payment_purchase:updated',
+      );
+    }
 
     return sendResponse(res, 201, true, 'Return created successfully', {
-      id: newId,
-      refundAmount: Number(refundAmount),
+      id: result.id,
+      type: isSale ? 'SALE_RETURN' : 'PURCHASE_RETURN',
+      party: isSale ? result.customer : result.supplier,
+      items: result.items,
+      subtotal: Number(result.refundAmount),
+      discount: 0,
+      total: Number(result.refundAmount),
+      paid: Number(cashRefund),
+      adjustedDue: Number(adjustedDue),
+      due: Number(remainingDue),
+      paymentMethod: adjustedDue.greaterThan(0) ? 'RETURN_ADJUSTMENT' : 'CASH',
+      createdAt: result.createdAt,
     });
   } catch (error) {
     next(error);
   }
 };
-
 /*-----------------------------------------*
  * Returns paginated list of returns
  *-----------------------------------------*/
@@ -185,7 +316,7 @@ export const getAllReturns = async (
 ) => {
   try {
     const storeId = res.locals.storeId!;
-    const { page, search } = req.query;
+    const { page, party, search } = req.query;
 
     const limit = PAGINATION.DEFAULT_LIMIT;
     const currentPage = Number(page) || PAGINATION.DEFAULT_PAGE;
@@ -193,6 +324,11 @@ export const getAllReturns = async (
 
     const filter: Prisma.ReturnWhereInput = { storeId };
 
+    if (party === 'customer') {
+      filter.customerId = { not: null };
+    } else if (party === 'supplier') {
+      filter.supplierId = { not: null };
+    }
     if (search) {
       const term = String(search).trim();
       if (term) {
@@ -215,41 +351,64 @@ export const getAllReturns = async (
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
-        include: { items: true },
+        select: {
+          id: true,
+          type: true,
+          reason: true,
+          condition: true,
+          refundAmount: true,
+          createdAt: true,
+
+          items: {
+            select: {
+              id: true,
+              productName: true,
+              quantity: true,
+              price: true,
+              total: true,
+            },
+          },
+
+          customer: {
+            select: {
+              name: true,
+              email: true,
+              phone: true,
+              address: true,
+            },
+          },
+          supplier: {
+            select: {
+              name: true,
+              shopName: true,
+              phone: true,
+              email: true,
+              address: true,
+            },
+          },
+        },
       }),
       prisma.return.count({ where: filter }),
     ]);
 
     const totalPage = Math.ceil(total / limit);
+
+    const formattedReturns = returns.map(
+      ({ refundAmount, supplier, customer, ...item }) => ({
+        ...item,
+        party: supplier || customer,
+        subtotal: Number(refundAmount),
+        discount: 0,
+        total: Number(refundAmount),
+        paid: Number(refundAmount),
+        due: 0,
+        paymentMethod: 'CASH',
+      }),
+    );
+
     return sendResponse(res, 200, true, 'Returns fetched successfully', {
-      returns,
+      returns: formattedReturns,
       totalPage,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/*-----------------------------------------*
- * Returns single return with items
- *-----------------------------------------*/
-export const getReturn = async (
-  req: Request<{ returnId: string }>,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const storeId = res.locals.storeId!;
-    const { returnId } = req.params;
-
-    const r = await prisma.return.findFirst({
-      where: { id: returnId, storeId },
-      include: { items: true },
-    });
-
-    if (!r) throw new ApiError(404, 'Return not found');
-    return sendResponse(res, 200, true, 'Return fetched successfully', {
-      return: r,
     });
   } catch (error) {
     next(error);

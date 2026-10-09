@@ -6,6 +6,7 @@ import {
   createProduct,
   deleteProduct,
   getAllProduct,
+  getProductSuppliers,
   productList,
   updateProduct,
 } from '../controllers/product.controller.js';
@@ -14,6 +15,11 @@ const productRouters = express.Router();
 
 productRouters.get('/', authentication, getAllProduct);
 productRouters.get('/list', authentication, productList);
+productRouters.get(
+  '/:id/suppliers',
+  authentication,
+  getProductSuppliers,
+);
 
 productRouters.post(
   '/',

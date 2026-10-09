@@ -19,6 +19,7 @@ enum PaymentMethod {
   BANK_TRANSFER
   BKASH
   CARD
+  RETURN_ADJUSTMENT
 }
 
 enum StockMovementType {

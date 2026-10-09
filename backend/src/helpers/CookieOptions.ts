@@ -1,12 +1,27 @@
 import type { CookieOptions } from 'express';
 import config from '../config/config.js';
 
-export const buildCookieOptions = (maxAgeMs: number): CookieOptions => ({
+// export const buildCookieOptions = (maxAgeMs: number): CookieOptions => ({
+//   httpOnly: true,
+//   secure: config.cookie.isProd,
+//   sameSite: config.cookie.sameSite,
+//   maxAge: maxAgeMs,
+//   ...(config.cookie.domain ? { domain: config.cookie.domain } : {}),
+// });
+
+
+
+export const buildCookieOptions = (
+  maxAgeMs: number,
+): CookieOptions => ({
   httpOnly: true,
   secure: config.cookie.isProd,
   sameSite: config.cookie.sameSite,
   maxAge: maxAgeMs,
-  ...(config.cookie.domain ? { domain: config.cookie.domain } : {}),
+  path: '/',
+  ...(config.cookie.domain
+    ? { domain: config.cookie.domain }
+    : {}),
 });
 
 export const clearCookieOptions = (): CookieOptions => {

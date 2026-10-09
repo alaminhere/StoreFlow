@@ -18,28 +18,20 @@ import {
 const paymentRouters = express.Router();
 
 // purchase payment
-paymentRouters.get(
-  '/supplier',
-  authentication,
-  authorization('PAYMENTS', 'view'),
-  getAllSupplierPayments,
-);
+paymentRouters.get('/supplier', authentication, getAllSupplierPayments);
 paymentRouters.get(
   '/supplier/:supplierId',
   authentication,
-  authorization('PAYMENTS', 'view'),
   getSupplierPayments,
 );
 paymentRouters.get(
   '/purchase/:purchaseId',
   authentication,
-  authorization('PAYMENTS', 'view'),
   getPurchasePayments,
 );
 paymentRouters.post(
   '/purchase/receive',
   authentication,
-  authorization('PAYMENTS', 'create'),
   ReceivePurchasePayment,
 );
 

@@ -1,4 +1,3 @@
-// db/db.js
 import fs from 'node:fs';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import config from '../config/config.js';
