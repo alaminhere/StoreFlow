@@ -58,7 +58,6 @@ const StoreForm = ({ open, setOpen }: Props) => {
     if (!file) return;
 
     const MAX_FILE_SIZE = 1024 * 1024 * 1;
-
     if (file.size > MAX_FILE_SIZE) {
       handleAlert(false, 'Image size must be less than 1MB');
       e.target.value = '';
@@ -88,9 +87,7 @@ const StoreForm = ({ open, setOpen }: Props) => {
   // Remove image
   const removeImage = async () => {
     if (!prevUrls) return;
-
     setIsLoading(true);
-
     try {
       await deleteCloudinaryImage(prevUrls.public_id);
       setPrevUrls(null);
@@ -106,12 +103,10 @@ const StoreForm = ({ open, setOpen }: Props) => {
       handleAlert(false, 'Please upload a store logo');
       return;
     }
-
     const payload = {
       ...data,
       ...(prevUrls && { logo: prevUrls }),
-    };
-    console.log(payload);
+    }; 
     try {
       const res = await createStore(payload).unwrap();
       if (!res) return;
@@ -128,7 +123,6 @@ const StoreForm = ({ open, setOpen }: Props) => {
       handleAlert(false, getApiErrorMessage(err));
     }
   };
-
   return (
     <>
       {open && (

@@ -14,7 +14,8 @@ import getApiErrorMessage from '@/helpers/getApiErrorMessage';
 import Link from 'next/link';
 import useCurrentUserContext from '@/hooks/useCurrentUserContext';
 import MenuItem from '../MenuItem';
-import Avatar from '../Avatar';
+import Avatar, { AvatarSize } from '../Avatar';
+import clsx from 'clsx';
 
 const menuItem = [
   {
@@ -29,12 +30,19 @@ const menuItem = [
   },
 ];
 
-const UserPopupMenu = ({ className }: { className?: string }) => {
+const UserPopupMenu = ({
+  className,
+  showText = true,
+  size = 'md',
+}: {
+  className?: string;
+  showText?: boolean;
+  size?: AvatarSize;
+}) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [signOut] = useSignOutMutation();
-
   const { user, store } = useCurrentUserContext();
 
   useEffect(() => {
@@ -65,33 +73,40 @@ const UserPopupMenu = ({ className }: { className?: string }) => {
     <div ref={menuRef} className="relative inline-block">
       <button
         onClick={() => setOpen(prev => !prev)}
-        className={`flex items-center gap-2 cursor-pointer ${className}`}
+        className={clsx(
+          'flex items-center gap-2 cursor-pointer w-full max-w-40 overflow-hidden',
+          className,
+        )}
       >
-        <Avatar name={user?.name || 'Load...'} details={'User'} />
-
+        <Avatar
+          name={user?.name || 'Load...'}
+          details={'User'}
+          showText={showText}
+          size={size}
+        />
         <ChevronDown
           size={16}
-          className={`transition-transform duration-200 ${
-            open ? 'rotate-180' : 'rotate-0'
-          }`}
+          className={clsx(
+            'transition-transform duration-200',
+            open ? 'rotate-180' : 'rotate-0',
+          )}
         />
       </button>
       {open && (
-        <div className="absolute left-0 md:left-auto md:right-0 mt-3 w-66 bg-surface rounded-xl shadow-lg z-50">
+        <div className="absolute left-0 md:left-auto md:right-0 mt-3 w-50 bg-surface rounded-xl shadow-lg z-50">
           <div className=" px-3 py-2.5 border-b border-border">
-            <h4 className="capitalize "> {user?.name || ''}</h4>
-            <p className="p14 leading-[1em] lowercase text-start">
+            <h4 className="capitalize line-clamp-1"> {user?.name || ''}</h4>
+            <p className="p14 leading-[1em] lowercase text-start line-clamp-1">
               {user?.email || ' '}
             </p>
           </div>
-
           {menuItem.map((item, index) => {
             return (
               <Link key={index} href={item.href}>
                 <MenuItem
                   icon={<item.icon size={16} />}
                   label={item.label}
-                  className="py-2.5! text-sm! rounded-none!"
+                  className="mt-1 text-sm! rounded-none!"
                 />
               </Link>
             );
@@ -100,16 +115,10 @@ const UserPopupMenu = ({ className }: { className?: string }) => {
             {store ? (
               <>
                 <Link href={'/dashboard'}>
-                  <div className=" px-3 py-2.5 border-b border-border">
-                    <h4 className="capitalize ">Current Store </h4>
-                    <p className="p14 leading-[1em] lowercase text-start">
-                      {store?.name || ''}
-                    </p>
-                  </div>
                   <MenuItem
                     icon={<Eye size={16} />}
-                    label={'View   Store '}
-                    className="py-2.5! text-sm! rounded-none!"
+                    label={'View Store '}
+                    className="rounded-none!"
                   />
                 </Link>
                 <Link href={'/profile/stores'}>
@@ -124,7 +133,7 @@ const UserPopupMenu = ({ className }: { className?: string }) => {
               <Link href={'/profile/stores'}>
                 <MenuItem
                   icon={<Package size={16} />}
-                  label={'Create Store'}
+                  label={'Open Store'}
                   className="py-2.5! text-sm! rounded-none!"
                 />
               </Link>

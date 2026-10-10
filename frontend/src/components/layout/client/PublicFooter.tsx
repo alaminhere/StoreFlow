@@ -63,7 +63,7 @@ const Support = [
 
 const PublicFooter = () => {
   return (
-    <footer className="bg-surface border border-border">
+    <footer className="bg-surface border-t border-border">
       <div className="app-container pb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-6">
           <div className="">
@@ -126,11 +126,10 @@ const PublicFooter = () => {
               </Link>
             ))}
           </div>
-
         </div>
         <div className="mt-6 border-t border-border">
           <p className="p14 mt-6 text-center">
-            © 2026 StoreFlow | Designed & Developed by {' '}
+            © 2026 StoreFlow | Designed & Developed by{' '}
             <a
               target="_blank"
               rel="noopener noreferrer"

@@ -63,10 +63,11 @@ const SUMMARY_CONFIG = [
 
 interface Props {
   stats?: DashboardCardsData['stats'];
+  range?:string;
   isLoading?: boolean;
 }
 
-const DashboardOverviewStrip = ({ stats, isLoading }: Props) => {
+const DashboardOverviewStrip = ({ stats,range, isLoading }: Props) => {
   return (
     <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
       {SUMMARY_CONFIG.map(config => {
@@ -77,7 +78,7 @@ const DashboardOverviewStrip = ({ stats, isLoading }: Props) => {
           <Card
             key={config.key}
             className={clsx(
-              'flex items-center gap-3 p-4! transition-opacity duration-150',
+              'flex items-center gap-3 p-4! transition-opacity duration-150 bg-primary-fade',
               isLoading && 'animate-pulse',
             )}
           >
@@ -86,14 +87,17 @@ const DashboardOverviewStrip = ({ stats, isLoading }: Props) => {
               className={clsx('rounded-xl p-2.5', config.iconStyle)}
             />
             <div className="min-w-0">
-              <p className="truncate p12">{config.label}</p>
+              <p className="truncate p12">
+                {' '}
+                {range && range} {config.label}
+              </p>
               <h4 className={clsx('truncate', config.valueStyle)}>
                 {isLoading ? (
                   <span className="text-muted">...</span>
                 ) : (
                   <>
                     {config.prefix ?? ''}
-                    {(value)}
+                    {value}
                   </>
                 )}
               </h4>

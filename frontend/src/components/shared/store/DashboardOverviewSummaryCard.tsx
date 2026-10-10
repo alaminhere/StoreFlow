@@ -14,6 +14,11 @@ import {
 import type { DashboardCardsData } from '@/types/dashboard.types';
 import formatPrice from '@/helpers/formatPrice';
 
+interface Props {
+  cards?: DashboardCardsData['cards'];
+  range?: string;
+  isLoading?: boolean;
+}
 
 const STATUS_CONFIG = [
   {
@@ -75,14 +80,7 @@ const Sparkling = ({ path, isUp }: { path: string; isUp: boolean }) => {
   );
 };
 
-
-
-interface Props {
-  cards?: DashboardCardsData['cards'];
-  isLoading?: boolean;
-}
-
-const DashboardOverviewSummaryCard = ({ cards, isLoading }: Props) => {
+const DashboardOverviewSummaryCard = ({ cards, range, isLoading }: Props) => {
   return (
     <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {STATUS_CONFIG.map(config => {
@@ -96,12 +94,13 @@ const DashboardOverviewSummaryCard = ({ cards, isLoading }: Props) => {
         const Icon = config.icon;
 
         return (
-          <Card key={config.key} className={
-            clsx(
-              'transition-opacity duration-100',
+          <Card
+            key={config.key}
+            className={clsx(
+              'transition-opacity duration-100 bg-primary-fade',
               isLoading && 'animate-pulse',
-            )
-          }>
+            )}
+          >
             <div className="flex items-start justify-between">
               <Icon
                 size={40}
@@ -110,7 +109,9 @@ const DashboardOverviewSummaryCard = ({ cards, isLoading }: Props) => {
               <Sparkling path={config.path} isUp={isUp} />
             </div>
 
-            <p className="mt-4 mb-1 text-sm">{config.label}</p>
+            <p className="mt-4 mb-1 text-sm">
+              {range && range} {config.label}
+            </p>
 
             <h3>
               {isLoading ? (

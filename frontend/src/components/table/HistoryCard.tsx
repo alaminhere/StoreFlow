@@ -33,7 +33,6 @@ const HistoryCard = ({
           </span>
         </div>
       </div>
-
       <p className="p14 font-medium text-text">৳{amount}</p>
     </div>
   </div>

@@ -71,10 +71,8 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
 
   // store searched email separately because email is only used for finding the user, not for create payload
   const [email, setEmail] = useState('');
-
   //store selected user information
   const [selectedUser, setSelectedUser] = useState<SelectedUser>(null);
-
   const isEdit = !!member;
   const isLoading = loadingCreate || loadingUpdate;
 
@@ -116,15 +114,13 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
     }
 
     try {
-      const res = await getUserByEmail(trimmedEmail).unwrap();
+      const res = await getUserByEmail({ email: trimmedEmail }).unwrap();
       const data = res.data;
 
       if (!res.success || !data) {
         setSelectedUser(null);
         setValue('userId', '');
-
         handleAlert(false, res.message || 'User not found');
-
         return;
       }
 
@@ -160,9 +156,8 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
           }).unwrap();
 
       if (!res) return;
-
       handleAlert(res.success, res.message);
-
+      
       if (res.success) {
         reset();
         setEmail('');
@@ -197,7 +192,6 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
                       readOnly={isEdit}
                     />
                   </div>
-
                   <Button
                     type="button"
                     onClick={handleSearchUser}
@@ -208,40 +202,31 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
                     Search
                   </Button>
                 </div>
-
                 <p className="text-sm text-text-muted">
                   Enter an Global user email to find the member.
                 </p>
               </>
             )}
 
-
             {selectedUser && (
               <div className="rounded-lg border border-border bg-surface p-4">
                 <h4>Member Information</h4>
-
                 <div>
                   <div className="mt-2 flex items-center gap-4">
                     <span className="w-10 p12">Name</span>
-
                     <span className="p14 text-text">{selectedUser.name}</span>
                   </div>
-
                   <div className="flex items-center gap-4">
                     <span className="w-10 p12">Email</span>
-
                     <span className="p14 text-text">{selectedUser.email}</span>
                   </div>
-
                   <div className="flex items-center gap-4">
                     <span className="w-10 p12">Phone</span>
-
                     <span className="p14 text-text">{selectedUser.phone}</span>
                   </div>
                 </div>
               </div>
             )}
-
             {/* Hidden User ID */}
             <input
               type="hidden"
@@ -251,7 +236,6 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
                   : false,
               })}
             />
-
             {/* Member Role */}
             <Select
               label="Member Role *"
@@ -264,7 +248,6 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
               <option value="" className="bg-surface">
                 Select member role
               </option>
-
               {ROLE.map(role => (
                 <option
                   key={role.value}
@@ -275,7 +258,6 @@ const MemberForm = ({ member, open, setOpen }: Props) => {
                 </option>
               ))}
             </Select>
-
             {/* Submit */}
             <Button
               loading={isLoading}

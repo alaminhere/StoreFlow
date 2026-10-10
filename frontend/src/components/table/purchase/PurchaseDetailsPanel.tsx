@@ -42,11 +42,11 @@ const PAYMENT_METHODS = ['CASH', 'BANK_TRANSFER', 'BKASH', 'CARD'];
 
 type Props = {
   purchase: Purchase | null;
-  setPurchase: (purchase: Purchase | null) => void;
+  setPurchase: (purchase: string | null) => void;
 };
 
 const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
-  const id = purchase?.supplierId;
+  const id = purchase?.id;
   const [purchaseReceivedPayment] = usePurchaseReceivedPaymentMutation();
   const { data: storeData } = useGetStoreQuery();
   const store = storeData?.data;
@@ -97,7 +97,7 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
       open={!!purchase}
     >
       <div className="w-full p-5">
-        {/* Supplier */}
+        {/* supplier */}
         <div className="mb-6 flex flex-col justify-between gap-5 sm:flex-row">
           <div className="w-full">
             <p className={styles.label}>SUPPLIER</p>
@@ -111,7 +111,7 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
           </div>
         </div>
 
-        {/* Date / Payment */}
+        {/* dte / payment */}
         <div className="mb-3 flex flex-wrap justify-between gap-4 rounded-md bg-accent-bg px-4 py-2">
           <div>
             <p className={styles.rowLabel}>Purchase Date</p>
@@ -128,17 +128,18 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
           <div>
             <p className={styles.rowLabel}>Status</p>
             <span
-              className={`capitalize p12 ${purchase?.due === 0
+              className={`capitalize p12 ${
+                purchase?.due === 0
                   ? 'text-success bg-successBg'
                   : 'text-warning bg-warningBg'
-                }`}
+              }`}
             >
               {getInvoiceStatus(purchase?.paid ?? 0, purchase?.due ?? 0)}
             </span>
           </div>
         </div>
 
-        {/* Items */}
+        {/* items */}
         <div className="mb-6 overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -163,7 +164,7 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
           </table>
         </div>
 
-        {/* Totals */}
+        {/* totals */}
         <div className="mb-6 flex justify-end">
           <div className="w-full">
             <div className={styles.summaryRow}>
@@ -198,11 +199,10 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
           </div>
         </div>
 
-        {/* Record Payment */}
+        {/* record payment */}
         {purchase?.due ? (
           <div className="mt-10 w-full flex-1 border-t border-border pt-5 md:max-w-md">
             <h4 className="mb-3">Pay Now</h4>
-
             <form onSubmit={onSubmit}>
               <div className="mb-3 grid grid-cols-2 gap-3">
                 <Input
@@ -211,7 +211,6 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
                   name="amount"
                   defaultValue={0}
                 />
-
                 <Select
                   label="Payment method"
                   name="method"
@@ -228,7 +227,6 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
                   ))}
                 </Select>
               </div>
-
               <Button type="submit" className="w-full">
                 Confirm payment
               </Button>
@@ -236,7 +234,7 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
           </div>
         ) : null}
 
-        {/* Invoice Actions */}
+        {/* invoice Actions */}
         <div className="grid grid-cols-2 gap-3 border-t border-border pt-5">
           <Button
             onClick={downloadInvoice}
@@ -245,7 +243,6 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
           >
             Download Invoice
           </Button>
-
           <Button
             loading={isSending}
             disabled={isSending}
@@ -256,10 +253,8 @@ const PurchaseDetailsPanel = ({ purchase, setPurchase }: Props) => {
             Email Invoice
           </Button>
         </div>
-
-        {/* Supplier Payment History */}
+        {/* supplier Payment History */}
         <h4 className="my-5 border-t border-border pt-5">Payment History</h4>
-
         <div className="space-y-3">
           {purchasePayment.map(item => (
             <HistoryCard

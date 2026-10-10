@@ -65,7 +65,6 @@ const ReturnTable = ({
                       details={item?.party.address}
                     />
                   </Td>
-
                   <Td className="flex flex-col">
                     <span>{item?.party.email}</span>
                     <span className="text-xs">{item?.party.phone}</span>

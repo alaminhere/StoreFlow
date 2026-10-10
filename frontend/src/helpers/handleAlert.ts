@@ -5,7 +5,6 @@ const handleAlert = (success: boolean, message: string) => {
     icon: success ? 'success' : 'error',
     title: success ? 'Success' : 'Error',
     text: message,
-
     customClass: {
       popup: 'my-swal-popup',
       title: 'my-swal-title',

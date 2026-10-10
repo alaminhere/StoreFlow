@@ -7,16 +7,14 @@ import getInitials from '@/helpers/getInitials';
 
 const StoreAvatar = ({ className }: { className?: string }) => {
   const { data: storeData, isLoading } = useGetStoreQuery();
-
   const store = storeData?.data;
   const logo = store?.logo?.url?.trim();
-
   const { color, initials } = getInitials(store?.name || 'N/A');
 
   return (
     <div className={clsx('flex items-center justify-start gap-2', className)}>
-      {/* Store Avatar */}
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md">
+      {/* store Avatar */}
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden border-2 border-border rounded-md">
         {isLoading ? (
           <div className="h-full w-full animate-pulse rounded-md bg-primary" />
         ) : logo ? (
@@ -38,13 +36,11 @@ const StoreAvatar = ({ className }: { className?: string }) => {
           </div>
         )}
       </div>
-
       <div className="min-w-0">
-        <h4 className="truncate font-medium text-title">
+        <h4 className="truncate font-bold text-title line-clamp-1">
           {isLoading ? 'Loading...' : store?.name || 'N/A'}
         </h4>
-
-        <p className="p14 leading-[1em] ">
+        <p className="p12 leading-[1em] line-clamp-1">
           {isLoading ? 'Loading...' : store?.tagline}
         </p>
       </div>

@@ -26,10 +26,10 @@ const COLUMNS = [
 
 type Props = {
   Sales: Sales[];
-  setSelectedForDetails: (sales: Sales | null) => void;
+  setSelectedSaleId: (sales: string | null) => void;
 };
 
-const SaleTable = ({ Sales, setSelectedForDetails }: Props) => {
+const SaleTable = ({ Sales, setSelectedSaleId }: Props) => {
   return (
     <>
       {/* Table */}
@@ -77,7 +77,7 @@ const SaleTable = ({ Sales, setSelectedForDetails }: Props) => {
                   <Td className="text-right">
                     <button
                       className="cursor-pointer px-3"
-                      onClick={() => setSelectedForDetails(item)}
+                      onClick={() => setSelectedSaleId(item.id)}
                     >
                       <History size={15} />
                     </button>

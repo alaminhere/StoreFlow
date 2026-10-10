@@ -55,7 +55,7 @@
 .dark {
   /* Background & Structure */
   --background: #0b111b;
-  --surface: #121a27;
+  --surface: #101824;
   --border: #273243;
 
   /* Text */
@@ -222,5 +222,14 @@ body {
   }
   .p12 {
     @apply text-xs text-text-muted font-dm-sans font-normal leading-normal tracking-normal;
+  }
+}
+
+@layer utilities {
+  .bg-primary-fade {
+    @apply bg-linear-to-br from-primary/5 via-surface to-surface;
+  }
+  .bg-primary-blend {
+    @apply bg-linear-to-br from-primary/10 via-surface/60 to-background;
   }
 }

@@ -62,7 +62,6 @@ const ProductsFilter = () => {
           </option>
         ))}
       </Select>
-
       <Select
         value={searchParams.get('category') || 'all'}
         onChange={e => handleFilter('category', e.target.value)}
@@ -76,14 +75,12 @@ const ProductsFilter = () => {
           </option>
         ))}
       </Select>
-
       <Select
         value={searchParams.get('brand') || 'all'}
         onChange={e => handleFilter('brand', e.target.value)}
         className="py-2.5 text-sm text-text-muted"
       >
         <option value="all">All Brand</option>
-
         {BRAND.map((item, index) => (
           <option key={index} className="bg-surface" value={item.slug}>
             {item.name}

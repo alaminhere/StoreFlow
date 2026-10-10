@@ -38,10 +38,15 @@ const STORE_ROUTES = Object.keys(STORE_ROUTE_MODULE);
 const matches = (pathname: string, routes: string[]) =>
   routes.some(r => pathname === r || pathname.startsWith(`${r}/`));
 
-const getModule = (pathname: string): string | undefined =>
-  Object.entries(STORE_ROUTE_MODULE).find(
-    ([r]) => pathname === r || pathname.startsWith(`${r}/`),
-  )?.[1];
+const getModule = (pathname: string): string | undefined => {
+  const routes = Object.keys(STORE_ROUTE_MODULE).sort(
+    (a, b) => b.length - a.length,
+  );
+  const match = routes.find(
+    r => pathname === r || pathname.startsWith(`${r}/`),
+  );
+  return match ? STORE_ROUTE_MODULE[match] : undefined;
+};
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -57,7 +62,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Store route
+  // store route
   if (matches(pathname, STORE_ROUTES)) {
     if (!authToken) return redirectTo('/signin');
     if (!storeToken) return redirectTo('/profile');

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import FormSignIn from '@/components/auth/FormSignIn';
 import Showcase from '@/components/auth/Showcase';
+import { ChevronLeft } from '@/helpers/icon/icon';
 
 const SignInPage = () => {
   return (
@@ -11,12 +12,17 @@ const SignInPage = () => {
           <Showcase />
           {/* right  */}
           <div className="md:bg-background-secondary  md:w-1/2 relative  flex flex-col justify-center items-start bg-yellow md:p-8 mt-5 md:mt-0 ">
+            <Link
+              href="/"
+              className="mb-6 inline-flex items-center gap-1 p14 md:hidden"
+            >
+              <ChevronLeft size={16} aria-hidden /> Back to home
+            </Link>
             <div className="w-full mb-8">
-              <h2>Welcome back! </h2>
+              <h3>Welcome back! </h3>
               <p className="">Log in to your store account</p>
             </div>
             <FormSignIn />
-
             <p className="p14 text-center mt-5 w-full">
               Don&apos;t have an account ?{'   '}
               <Link href="/signup" className="text-primary hover:underline">

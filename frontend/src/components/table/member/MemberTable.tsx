@@ -45,7 +45,7 @@ const MemberTable = ({
   return (
     <div className="scrollbar-thin scrollbar-thumb-border overflow-x-auto">
       <table className="w-full text-sm">
-        {/* Header */}
+        {/* header */}
         <thead>
           <tr className="border-b border-border">
             <th className="w-12 px-5 py-3.5">
@@ -71,41 +71,29 @@ const MemberTable = ({
         <tbody>
           {member?.map(item => {
             const isChecked = selected.includes(item?.id);
-
             return (
               <Tr
                 key={item?.id}
                 className={clsx(isChecked && 'bg-sidebar-active-bg')}
               >
-                {/* Selection */}
                 <Td className="px-5 py-3.5">
                   <Checkbox
                     checked={isChecked}
                     onChange={() => toggleOne(item?.id)}
                   />
                 </Td>
-
-                {/* Member */}
                 <Td>
                   <Avatar
                     name={item?.name}
                     details={item?.address ?? 'Bangladesh'}
                   />
                 </Td>
-
-                {/* Contact */}
                 <Td className="flex flex-col">
                   <span>{item?.email}</span>
                   <span className="text-xs">{item?.phone}</span>
                 </Td>
-
-                {/* Role */}
                 <Td className="text-info">{item.role}</Td>
-
-                {/* Joined Date */}
                 <Td>{formatDate(item?.createdAt)}</Td>
-
-                {/* Actions */}
                 <Td className="text-end! ">
                   <button
                     onClick={() => {

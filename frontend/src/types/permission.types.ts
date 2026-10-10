@@ -1,5 +1,4 @@
 export type Role = 'OWNER' | 'MANAGER' | 'ADMIN' | 'SALESMAN';
-
 export type PermissionAction = 'view' | 'create' | 'edit' | 'delete';
 
 export type PermissionModule =
@@ -20,10 +19,9 @@ export type PermissionModule =
   | 'NOTIFICATIONS'
   | 'MEMBER_ROLES'
   | 'SETTINGS';
+
 export type ModulePermissions = Partial<Record<PermissionAction, boolean>>;
-
 export type Permissions = Partial<Record<PermissionModule, ModulePermissions>>;
-
 export interface PermissionResponse {
   role: Role;
   permissions: Permissions;

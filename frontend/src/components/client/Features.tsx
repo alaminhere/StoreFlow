@@ -55,39 +55,37 @@ const FEATURE_CARD = [
 
 const Features = () => {
   return (
-    <>
-      <section id="features">
-        <div className="app-container">
-          <div>
-            <p className="animate-slide-up mb-2 uppercase text-primary font-medium">
-              Future
-            </p>
-            <h2 className="animate-slide-up">Everything Your Business Needs</h2>
-            <p className="animate-slide-up mt-1 w-full md:w-[50%]">
-              From inventory tracking to invoicing, Stockpile gives you all the
-              tools in one powerful, easy-to-use platform.
-            </p>
-          </div>
-          <div className="mt-8 grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {FEATURE_CARD.map((item, index) => (
-              <Card key={index} className=" group">
-                <div className="">
-                  <item.icon
-                    size={45}
-                    className={clsx(
-                      'text-white p-2 rounded-xl mb-5 group-hover:scale-110 transition-transform duration-100',
-                      item.color,
-                    )}
-                  />
-                </div>
-                <h4 className="animate-slide-up">{item.title}</h4>
-                <p className="p14 animate-slide-up mt-1">{item.description}</p>
-              </Card>
-            ))}
-          </div>
+    <section id="features">
+      <div className="app-container">
+        <div>
+          <p className="animate-slide-up mb-2 uppercase text-primary font-medium">
+            Future
+          </p>
+          <h2 className="animate-slide-up">Everything Your Business Needs</h2>
+          <p className="animate-slide-up mt-1 w-full md:w-[50%]">
+            From inventory tracking to invoicing, Stockpile gives you all the
+            tools in one powerful, easy-to-use platform.
+          </p>
         </div>
-      </section>
-    </>
+        <div className="mt-8 grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {FEATURE_CARD.map((item, index) => (
+            <Card key={index} className=" group  bg-primary-fade">
+              <div className="">
+                <item.icon
+                  size={45}
+                  className={clsx(
+                    'text-white p-2 rounded-xl mb-5 group-hover:scale-110 transition-transform duration-100',
+                    item.color,
+                  )}
+                />
+              </div>
+              <h4 className="animate-slide-up">{item.title}</h4>
+              <p className="p14 animate-slide-up mt-1">{item.description}</p>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 

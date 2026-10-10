@@ -1,5 +1,4 @@
 import { baseApi } from '../baseApi';
-import { user, users } from '@/mocks/user';
 import { UpdatePassword } from '@/types/user/auth.types';
 import { UpdateUser, User } from '@/types/user/user.types';
 
@@ -11,75 +10,66 @@ type ApiResponse = {
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: build => ({
-
+    /*----------------------------------------*
+     *  fetch the currently authenticated user
+     *----------------------------------------*/
     getMe: build.query<ApiResponse, void>({
-      // API: Fetch the currently authenticated user
-      // query: () => ({
-      //   url: '/user/me',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: user,
-        },
+      query: () => ({
+        url: '/user/me',
+        method: 'GET',
       }),
-
       providesTags: ['user'],
     }),
 
-    getUserByEmail: build.query<ApiResponse, string>({
-      // API: Fetch a user by email
-      // query: email => ({
-      //   url: `/user/${email}`,
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async email => {
-        const userByEmail = users.find(item => item.email === email);
-
-        return {
-          data: {
-            message: '',
-            success: true,
-            data: userByEmail,
-          },
-        };
-      },
+    /*----------------------------------------*
+     *        fetch a user by email
+     *----------------------------------------*/
+    getUserByEmail: build.query<ApiResponse, { email: string }>({
+      query: ({ email }) => ({
+        url: `/user/email?email=${email}`,
+        method: 'GET',
+      }),
     }),
 
+    /*----------------------------------------*
+     *       update profile
+     *----------------------------------------*/
     updateUserProfile: build.mutation<ApiResponse, UpdateUser>({
       query: data => ({
         url: '/user/me/profile',
         method: 'PATCH',
         body: data,
       }),
-
       invalidatesTags: ['user'],
     }),
 
+    /*----------------------------------------*
+     *        update password
+     *----------------------------------------*/
     updateUserPassword: build.mutation<ApiResponse, UpdatePassword>({
       query: data => ({
-        url: '/user/password',
+        url: '/user/me/password',
         method: 'PATCH',
         body: data,
       }),
-
       invalidatesTags: ['user'],
     }),
 
+    /*----------------------------------------*
+     *        delete may account
+     *----------------------------------------*/
     deleteUser: build.mutation<ApiResponse, { password: string }>({
       query: data => ({
         url: '/user/me/delete',
         method: 'DELETE',
         body: data,
       }),
-
-      invalidatesTags: ['user'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.resetApiState());
+        } catch {}
+      },
     }),
   }),
 });

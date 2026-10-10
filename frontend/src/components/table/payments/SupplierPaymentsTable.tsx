@@ -25,7 +25,7 @@ const SupplierPaymentsTable = () => {
   const page = Number(searchParams.get('page')) || 1;
   const { data: paymentData, isLoading } = useSupplierPaymentsQuery({ page })
 
-  const payment = paymentData?.data.supplierPayments
+  const payments = paymentData?.data.payments;
   const totalPage = paymentData?.data.totalPage || 1
 
   return (
@@ -43,9 +43,7 @@ const SupplierPaymentsTable = () => {
                     col.align === 'right' ? 'text-right' : 'text-left',
                   )}
                 >
-                  <span
-                    className='inline-flex items-center gap-1'
-                  >
+                  <span className="inline-flex items-center gap-1">
                     {col.label}
                   </span>
                 </Th>
@@ -55,11 +53,14 @@ const SupplierPaymentsTable = () => {
 
           {/* Body */}
           <tbody>
-            {payment?.map(item => {
+            {payments?.map(item => {
               return (
                 <Tr key={item?.id}>
                   <Td>
-                    <Avatar name={item?.supplier?.name} details={item?.supplier?.address} />
+                    <Avatar
+                      name={item?.supplier?.name}
+                      details={item?.supplier?.address}
+                    />
                   </Td>
                   <Td className="flex flex-col">
                     <span>{item?.supplier?.email}</span>
@@ -68,7 +69,7 @@ const SupplierPaymentsTable = () => {
                   <Td>{formatPrice(item.amount)}</Td>
                   <Td>{item.purchaseId}</Td>
                   <Td>{item.paymentMethod}</Td>
-                  <Td className='text-right'>{formatDate(item.createdAt)}</Td>
+                  <Td className="text-right">{formatDate(item.createdAt)}</Td>
                 </Tr>
               );
             })}

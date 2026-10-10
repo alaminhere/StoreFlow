@@ -16,10 +16,8 @@ import { useResetPasswordMutation } from '@/redux/feature/user/authSlice';
 
 const FormResetPassword = () => {
   const router = useRouter();
-
   const [showNewP, setShowNewP] = useState(false);
   const [showCnfNew, setShowCnfNew] = useState(false);
-
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const {
@@ -57,7 +55,6 @@ const FormResetPassword = () => {
             placeholder="••••••••"
             error={errors.password}
           />
-
           <button
             type="button"
             onClick={() => setShowNewP(prev => !prev)}
@@ -68,7 +65,6 @@ const FormResetPassword = () => {
             {showNewP ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         </div>
-
         <div className="relative w-full">
           <Input
             type={showCnfNew ? 'text' : 'password'}

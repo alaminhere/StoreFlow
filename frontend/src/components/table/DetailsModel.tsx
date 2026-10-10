@@ -27,7 +27,6 @@ const DetailsModel = ({
           className,
         )}
       />
-
       <div
         className={clsx(
           'fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-border bg-surface transition-transform duration-300',
@@ -40,7 +39,6 @@ const DetailsModel = ({
             <X size={20} />
           </button>
         </div>
-
         <div className="flex-1 scrollbar-thin scrollbar-thumb-border overflow-y-auto">
           {children}
         </div>

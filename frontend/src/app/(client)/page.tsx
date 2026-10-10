@@ -3,7 +3,7 @@ import Pricing from '@/components/client/Pricing';
 import Features from '@/components/client/Features';
 import Testimonials from '@/components/client/Testimonials';
 
-export default function Home() {
+const Home = () => {
   return (
     <>
       <Hero />
@@ -12,4 +12,6 @@ export default function Home() {
       <Testimonials />
     </>
   );
-}
+};
+
+export default Home;

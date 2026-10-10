@@ -1,5 +1,3 @@
-
-
 import clsx from 'clsx';
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -11,15 +9,18 @@ interface PopupModalProps {
   label?: string | ReactNode;
 }
 
-const PopupModal = ({ className, onClose, children, label }: PopupModalProps) => {
+const PopupModal = ({
+  className,
+  onClose,
+  children,
+  label,
+}: PopupModalProps) => {
   const [shown, setShown] = useState(false);
-
 
   useEffect(() => {
     const t = setTimeout(() => setShown(true), 10);
     return () => clearTimeout(t);
   }, []);
-
 
   const handleClose = () => {
     setShown(false);
@@ -37,14 +38,19 @@ const PopupModal = ({ className, onClose, children, label }: PopupModalProps) =>
       <div
         className={clsx(
           'bg-surface border border-border rounded-2xl w-full max-w-3xl mx-auto max-h-[90vh] flex flex-col transition-all duration-300',
-          shown ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-3 scale-95',
+          shown
+            ? 'opacity-100 translate-y-0 scale-100'
+            : 'opacity-0 translate-y-3 scale-95',
           className,
         )}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center px-5 py-3 border-b border-border shrink-0">
           <h4 className="text-xl capitalize">{label || 'Add Supplier'}</h4>
-          <button className="cursor-pointer text-text-muted" onClick={handleClose}>
+          <button
+            className="text-warning cursor-pointer px-3 py-1 bg-warning-bg/30 rounded-md"
+            onClick={handleClose}
+          >
             ✕
           </button>
         </div>

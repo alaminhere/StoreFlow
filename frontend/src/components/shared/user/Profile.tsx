@@ -22,6 +22,7 @@ const UserProfile = ({ user }: { user: User }) => {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
+      address: formData.get('address') as string,
     };
 
     try {
@@ -33,6 +34,7 @@ const UserProfile = ({ user }: { user: User }) => {
       handleAlert(false, getApiErrorMessage(err));
     }
   };
+
 
   return (
     <form onSubmit={onSubmit}>

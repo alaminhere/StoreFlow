@@ -9,9 +9,10 @@ import Input from '@/components/ui/input';
 
 import handleAlert from '@/helpers/handleAlert';
 import getApiErrorMessage from '@/helpers/getApiErrorMessage';
-import { useCreateReturnMutation } from '@/redux/feature/returnApi';
+import { useCreateReturnMutation } from '@/redux/feature/returnSlice';
 import { useLazyGetSaleForReturnQuery } from '@/redux/feature/SaleSlice';
 import { useLazyGetPurchaseForReturnQuery } from '@/redux/feature/purchaseSlice';
+
 import formatPrice from '@/helpers/formatPrice';
 import PopupModal from '../PopupModal';
 import Th from '@/components/table/Th';
@@ -20,6 +21,7 @@ import Checkbox from '@/components/ui/Checkbox';
 import Td from '@/components/table/Td';
 import formatDate from '@/helpers/formatDate';
 import Textarea from '@/components/ui/textarea';
+
 import {
   CreateReturnItemRequest,
   ReturnFormValues,
@@ -199,26 +201,21 @@ const ReturnForm = ({ open, setOpen }: Props) => {
                 {/* party information */}
                 <div className="rounded-lg border border-border p-4">
                   <h4>Member Information</h4>
-
                   <div>
                     <div className="mt-2 flex items-center gap-4">
                       <span className="w-10 p12">Name</span>
-
                       <span className="p14 text-text">
                         {reference.party.name}
                       </span>
                     </div>
-
                     <div className="flex items-center gap-4">
                       <span className="w-10 p12">Email</span>
-
                       <span className="p14 text-text">
                         {reference.party.phone}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="w-10 p12">Total</span>
-
                       <span className="p14 text-text">
                         {formatPrice(reference.total)}
                       </span>
@@ -271,7 +268,6 @@ const ReturnForm = ({ open, setOpen }: Props) => {
                         const qty =
                           selected.find(s => s.productId === item.productId)
                             ?.quantity ?? 0;
-
                         return (
                           <Tr
                             key={item.productId}
@@ -330,7 +326,6 @@ const ReturnForm = ({ open, setOpen }: Props) => {
                     })}
                     error={errors.reason}
                   />
-
                   <div className="flex gap-6">
                     <label className="flex cursor-pointer items-center gap-2">
                       <input

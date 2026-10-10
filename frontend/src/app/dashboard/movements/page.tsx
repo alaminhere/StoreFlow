@@ -13,10 +13,9 @@ const page = () => {
         description="Track all stock-in, stock-out, and adjustment activities."
         className="mb-5"
       />
-
       <Card className="hover:border-border! flex flex-col xl:flex-row gap-2 md:gap-5 my-5">
         <Suspense fallback={<Loading />}>
-          <SearchInput placeholder="Search date Reason" />
+          <SearchInput placeholder="search type.." />
         </Suspense>
       </Card>
       <Suspense fallback={<Loading />}>

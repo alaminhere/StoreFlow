@@ -1,6 +1,5 @@
 import { Star } from '@/helpers/icon/icon';
-
-//WHAT: Generate rating stars based on value
+ 
 const RatingGenerator = (value: number) => {
   const initialStar = 5;
   const star = Array.from({ length: initialStar }, (_, index) => {

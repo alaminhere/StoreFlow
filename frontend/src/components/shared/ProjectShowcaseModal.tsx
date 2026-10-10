@@ -1,104 +1,206 @@
-import { GitHub, Globe, Linkedin } from "@/helpers/icon/icon";
-import PopupModal from "./PopupModal";
-import Logo from "./SiteLogo";
-import Button from "../ui/button";
-
+import Logo from './SiteLogo';
+import Button from '../ui/button';
+import PopupModal from './PopupModal';
+import { GitHub, Globe, Linkedin } from '@/helpers/icon/icon';
 
 const LINKS = {
-     portfolio: 'https://alaminhere.com/',
-     linkedin: 'https://www.linkedin.com/in/alamin-here',
-     github: 'https://github.com/alaminhere/StoreFlow',
+  portfolio: 'https://alaminhere.com/',
+  linkedin: 'https://www.linkedin.com/in/alamin-here',
+  github: 'https://github.com/alaminhere/StoreFlow',
 };
 
-const TECH = [
-     { abbr: 'TS', name: 'TypeScript', desc: 'Type-safe, maintainable code.', color: 'bg-sky-600 text-text' },
-     { abbr: 'React', name: 'React / Next.js', desc: 'Modern, responsive user interfaces.', color: 'bg-info-bg text-info' },
-     { abbr: 'Node', name: 'Node.js / Express', desc: 'Backend APIs and business logic.', color: 'bg-success-bg text-success' },
-     { abbr: 'Prisma', name: 'Prisma ORM', desc: 'Type-safe database queries.', color: 'bg-accent-bg text-accent' },
-     { abbr: 'SQL', name: 'MySQL', desc: 'Reliable relational data storage.', color: 'bg-info-bg text-info' },
-     { abbr: 'RTK', name: 'Redux Toolkit / RTK Query', desc: 'Centralized state and API data management.', color: 'bg-warning-bg text-warning' },
-     { abbr: 'JWT', name: 'JWT / Authentication', desc: 'Secure access and session management.', color: 'bg-danger-bg text-danger' },
+const FEATURES = [
+  'Multi-store inventory management',
+  'POS with real-time stock updates',
+  'Role-based access for owners and staff',
+  'PDF invoices and sales analytics',
 ];
 
+const TECH_GROUPS = [
+  {
+    title: 'Frontend',
+    items: [
+      'Next.js 16',
+      'React 19',
+      'TypeScript',
+      'Tailwind CSS 4',
+      'RTK Query',
+      'React Hook Form',
+      'Chart.js',
+      'jsPDF',
+    ],
+  },
+  {
+    title: 'Backend',
+    items: [
+      'Node.js',
+      'Express 5',
+      'Socket.IO',
+      'JWT',
+      'bcrypt',
+      'Zod',
+      'Rate limiting',
+      'CORS',
+    ],
+  },
+  {
+    title: 'Database and services',
+    items: ['MySQL', 'Prisma ORM', 'Cloudinary', 'Multer', 'Resend'],
+  },
+];
+
+const LinkButton = ({
+  href,
+  icon: Icon,
+  iconClass = 'text-text!',
+  variant,
+  children,
+}: {
+  href: string;
+  icon: typeof Globe;
+  iconClass?: string;
+  variant?: 'secondary';
+  children: React.ReactNode;
+}) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="block rounded-xl"
+  >
+    <Button size="sm" variant={variant} className="w-full">
+      <Icon className={iconClass} size={20} aria-hidden /> {children}
+    </Button>
+  </a>
+);
+
 const ProjectShowcaseModal = ({ onClose }: { onClose: () => void }) => (
-     <PopupModal
-          onClose={onClose}
-          className="max-w-160!"
-          label={<Logo />}
-     >
-          <h3 className="text-2xl">
-               Built with Modern Web Technologies
-          </h3>
-          <p className="mt-2 md:max-w-[80%] p14">
-               StoreFlow is an inventory management system built to simplify business
-               operations.
-          </p>
+  <PopupModal onClose={onClose} className="max-w-190!" label={<Logo />}>
+    <div className="max-h-[60dvh] overflow-y-auto pr-1 scrollbar-thin">
+      <h3 className="text-2xl">Built with Modern Web Technologies</h3>
+      <p className="mt-1 md:max-w-[80%] p14">
+        StoreFlow is an inventory management system for growing businesses.
+      </p>
 
-          <ul className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
-               {TECH.map((item, index) => (
-                    <li
-                         key={item.name}
-                         className={`flex items-start gap-3 rounded-xl border border-border/40 bg-surface p-3.5 transition-colors hover:border-primary/40 ${index === TECH.length - 1 && TECH.length % 2 ? 'sm:col-span-2' : ''
-                              }`}
-                    >
-                         <span className={`flex h-7 min-w-9 items-center justify-center rounded-md px-1.5 p12 font-semibold ${item.color}`}>
-                              {item.abbr}
-                         </span>
-                         <span>
-                              <h4>
-                                   {item.name}
-                              </h4>
-                              <span className="mt-0.5 block p12 leading-snug">{item.desc}</span>
-                         </span>
-                    </li>
-               ))}
-          </ul>
+      <section className="mt-4">
+        <h4>Key features</h4>
+        <ul className="mt-1 grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
+          {FEATURES.map(feature => (
+            <li key={feature} className="flex items-start gap-2 p14">
+              <span
+                aria-hidden
+                className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+              />
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </section>
 
-          <nav aria-label="Project links" className="mt-6 space-y-3">
-               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <a
-                         href={LINKS.portfolio}
-                         target="_blank"
-                         rel="noopener noreferrer"
-                         className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2"
-                    >
-                         <Button size="sm" variant="secondary" tabIndex={-1} className="w-full">
-                              <Globe className="text-text!" size={20} aria-hidden /> Explore My Portfolio
-                         </Button>
-                    </a>
-                    <a
-                         href={LINKS.linkedin}
-                         target="_blank"
-                         rel="noopener noreferrer"
-                         className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2"
-                    >
-                         <Button size="sm" variant="secondary" tabIndex={-1} className="w-full">
-                              <Linkedin className="text-text!" size={20} aria-hidden /> Connect on LinkedIn
-                         </Button>
-                    </a>
-               </div>
-               <a
-                    href={LINKS.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2"
-               >
-                    <Button size="sm" tabIndex={-1} className="w-full">
-                         <GitHub className="text-btn-primary-text!" size={20} aria-hidden /> View Source Code
-                    </Button>
-               </a>
-          </nav>
+      <section className="mt-4 rounded-xl border border-primary/30 bg-primary/5 p-3.5">
+        <h4>Try the live demo</h4>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center md:justify-between gap-2 border-t border-border pt-3 p12 text-text-muted">
-               <span>Designed &amp; Developed by <a
-                    href={LINKS.portfolio}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline"
-               >Md. Al-Amin</a> </span>
-               <span className="rounded-md border border-border px-2 py-0.5">Full-Stack Developer</span>
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 p14">
+          <span>
+            Email:{' '}
+            <code className="rounded bg-background px-1.5 py-0.5 text-text">
+              demo@example.com
+            </code>
+          </span>
+          <span>
+            Password:{' '}
+            <code className="rounded bg-background px-1.5 py-0.5 text-text">
+              12345
+            </code>
+          </span>
+        </p>
+
+        <p className="mt-2 p14">
+          After signing in, you will see a{' '}
+          <strong className="font-medium text-text">Store List</strong>. Choose
+          one:
+        </p>
+
+        <ul className="mt-1.5 space-y-1 p14">
+          <li className="flex items-start gap-2">
+            <span
+              aria-hidden
+              className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+            />
+            <span>
+              <strong className="font-medium text-text">Store A</strong> opens
+              as Owner with full access.
+            </span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span
+              aria-hidden
+              className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+            />
+            <span>
+              <strong className="font-medium text-text">Store B</strong> opens
+              as Manager with limited access.
+            </span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="mt-4 space-y-3">
+        {TECH_GROUPS.map(group => (
+          <div key={group.title}>
+            <h4>{group.title}</h4>
+            <ul className="mt-1.5 flex flex-wrap gap-1.5">
+              {group.items.map(item => (
+                <li
+                  key={item}
+                  className="rounded-md border border-border bg-surface px-2.5 py-1 p12"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
-     </PopupModal>
+        ))}
+      </section>
+    </div>
+
+    <div className="shrink-0 pt-3">
+      <nav className="space-y-2.5">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <LinkButton href={LINKS.portfolio} icon={Globe} variant="secondary">
+            Explore My Portfolio
+          </LinkButton>
+          <LinkButton href={LINKS.linkedin} icon={Linkedin} variant="secondary">
+            Connect on LinkedIn
+          </LinkButton>
+        </div>
+        <LinkButton
+          href={LINKS.github}
+          icon={GitHub}
+          iconClass="text-btn-primary-text!"
+        >
+          View Source Code
+        </LinkButton>
+      </nav>
+
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-2 border-t border-border pt-2.5 p12 text-text-muted md:justify-between">
+        <span>
+          Designed &amp; Developed by{' '}
+          <a
+            href={LINKS.portfolio}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline"
+          >
+            Md. Al-Amin
+          </a>
+        </span>
+        <span className="rounded-md border border-border px-2 py-0.5">
+          Full-Stack Developer
+        </span>
+      </div>
+    </div>
+  </PopupModal>
 );
 
 export default ProjectShowcaseModal;

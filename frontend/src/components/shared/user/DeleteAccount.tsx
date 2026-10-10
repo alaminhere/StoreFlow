@@ -8,6 +8,7 @@ import Button from '@/components/ui/button';
 import { useDeleteUserMutation } from '@/redux/feature/user/userSlice';
 import handleAlert from '@/helpers/handleAlert';
 import getApiErrorMessage from '@/helpers/getApiErrorMessage';
+import { useRouter } from 'next/navigation';
 
 const UserDeleteAccount = () => {
   const {
@@ -16,15 +17,14 @@ const UserDeleteAccount = () => {
     formState: { errors },
   } = useForm<{ password: string }>();
 
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-
   const [deleteUser, { isLoading }] = useDeleteUserMutation();
-
   const onSubmit = async (data: { password: string }): Promise<void> => {
     try {
       const res = await deleteUser(data).unwrap();
       if (!res) return;
-
+      router.push('/signin');
       handleAlert(res.success, res.message);
     } catch (err) {
       handleAlert(false, getApiErrorMessage(err));

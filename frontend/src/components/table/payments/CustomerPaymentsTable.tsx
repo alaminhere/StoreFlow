@@ -16,17 +16,17 @@ const COLUMNS = [
   { label: 'Contact', align: 'left' },
   { label: 'Amount', align: 'left' },
   { label: 'SaleId', align: 'left' },
-  { label: '  Method', align: 'left', },
-  { label: 'Date', align: 'right', },
+  { label: '  Method', align: 'left' },
+  { label: 'Date', align: 'right' },
 ];
 
 const CustomerPaymentsTable = () => {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get('page')) || 1;
-  const { data: paymentData, isLoading } = useCustomerPaymentsQuery({ page })
+  const { data: paymentData, isLoading } = useCustomerPaymentsQuery({ page });
 
-  const payment = paymentData?.data.customerPayment
-  const totalPage = paymentData?.data.totalPage || 1
+  const payments = paymentData?.data.payments;
+  const totalPage = paymentData?.data.totalPage || 1;
 
   return (
     <>
@@ -43,9 +43,7 @@ const CustomerPaymentsTable = () => {
                     col.align === 'right' ? 'text-right' : 'text-left',
                   )}
                 >
-                  <span
-                    className='inline-flex items-center gap-1'
-                  >
+                  <span className="inline-flex items-center gap-1">
                     {col.label}
                   </span>
                 </Th>
@@ -55,11 +53,14 @@ const CustomerPaymentsTable = () => {
 
           {/* Body */}
           <tbody>
-            {payment?.map(item => {
+            {payments?.map(item => {
               return (
                 <Tr key={item?.id}>
                   <Td>
-                    <Avatar name={item?.customer?.name} details={item?.customer?.address} />
+                    <Avatar
+                      name={item?.customer?.name}
+                      details={item?.customer?.address}
+                    />
                   </Td>
                   <Td className="flex flex-col">
                     <span>{item?.customer?.email}</span>
@@ -68,7 +69,7 @@ const CustomerPaymentsTable = () => {
                   <Td>{formatPrice(item.amount)}</Td>
                   <Td>{item.saleId}</Td>
                   <Td>{item.paymentMethod}</Td>
-                  <Td className='text-right'>{formatDate(item.createdAt)}</Td>
+                  <Td className="text-right">{formatDate(item.createdAt)}</Td>
                 </Tr>
               );
             })}
@@ -79,4 +80,4 @@ const CustomerPaymentsTable = () => {
     </>
   );
 };
-export default CustomerPaymentsTable
+export default CustomerPaymentsTable;

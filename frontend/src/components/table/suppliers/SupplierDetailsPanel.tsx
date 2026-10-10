@@ -24,9 +24,7 @@ const SupplierDetailsPanel = ({
   const { data: supplierP } = useSingleSupplierPaymentsQuery(id!, {
     skip: !id,
   });
-
   const SUPPLIER_PAYMENT = supplierP?.data ?? [];
-
   return (
     <DetailsModel
       label="Supplier Details"
@@ -46,13 +44,11 @@ const SupplierDetailsPanel = ({
             label="Total Purchases"
             value={supplier?.totalPurchase ?? ''}
           />
-
           <InfoCard
             label="Total Paid"
             className="text-success!"
             value={supplier?.totalPaid ?? ''}
           />
-
           <InfoCard
             label="Total Due"
             className="text-warning!"
@@ -60,9 +56,8 @@ const SupplierDetailsPanel = ({
           />
         </div>
         <h4 className="mt-5">Payment History</h4>
-
         <div className="space-y-3">
-          {SUPPLIER_PAYMENT.map(item => (
+          {SUPPLIER_PAYMENT?.map(item => (
             <HistoryCard
               key={item.id}
               amount={item.amount}

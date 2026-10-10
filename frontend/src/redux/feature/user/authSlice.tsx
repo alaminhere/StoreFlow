@@ -14,119 +14,88 @@ type ApiResponse = {
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: build => ({
-
-    // Sign In
+    /*-------------------------------*
+     *        Sign In
+     *-------------------------------*/
     signIn: build.mutation<ApiResponse, SignInFormType>({
-      // query: data => ({
-      //   url: '/auth/signin',
-      //   method: 'POST',
-      //   body: data,
-      // }),
-      // invalidatesTags: ['user'],
-      queryFn: async () => ({
-        data: {
-          message: 'Successfully SignIn',
-          success: true,
-        },
+      query: data => ({
+        url: '/auth/signin',
+        method: 'POST',
+        body: data,
       }),
+      invalidatesTags: ['user'],
     }),
 
-    // Sign Up
+    /*-------------------------------*
+     *        Sign up
+     *-------------------------------*/
     signUp: build.mutation<ApiResponse, SignUpFormType>({
-      // query: data => ({
-      //   url: '/auth/signup',
-      //   method: 'POST',
-      //   body: data,
-      // }),
-      queryFn: async () => ({
-        data: {
-          message: 'Successfully SignUp',
-          success: true,
-        },
+      query: data => ({
+        url: '/auth/signup',
+        method: 'POST',
+        body: data,
       }),
     }),
 
-
-    // Verify Sign Up
+    /*-------------------------------*
+     *        verify Sign Up
+     *-------------------------------*/
     verifySignUp: build.mutation<ApiResponse, { otp: string }>({
-      // query: data => ({
-      //   url: '/auth/verify-signup',
-      //   method: 'POST',
-      //   body: data,
-      // }),
-      // invalidatesTags: ['user'],
-      queryFn: async () => ({
-        data: {
-          message: 'Successfully Verified',
-          success: true,
-        },
+      query: data => ({
+        url: '/auth/verify-signup',
+        method: 'POST',
+        body: data,
       }),
+      invalidatesTags: ['user'],
     }),
 
-
-    // Forgot Password
+    /*-------------------------------*
+     *        forgot Password
+     *-------------------------------*/
     forgetPassword: build.mutation<ApiResponse, { email: string }>({
-      // query: data => ({
-      //   url: '/auth/forgot-password',
-      //   method: 'POST',
-      //   body: data,
-      // }),
-      queryFn: async () => ({
-        data: {
-          message: 'send code',
-          success: true,
-        },
+      query: data => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body: data,
       }),
     }),
 
-
-    // Verify Forgot Password OTP
+    /*-------------------------------*
+     *   verify Forgot Password OTP
+     *-------------------------------*/
     verifyForgotPassword: build.mutation<ApiResponse, { otp: string }>({
-      // query: data => ({
-      //   url: '/auth/verify-forget-password',
-      //   method: 'POST',
-      //   body: data,
-      // }),
-
-      queryFn: async () => ({
-        data: {
-          message: 'verified ',
-          success: true,
-        },
+      query: data => ({
+        url: '/auth/verify-forgot-password',
+        method: 'POST',
+        body: data,
       }),
     }),
 
-
-    // Reset Password
+    /*-------------------------------*
+     *          reset Password
+     *-------------------------------*/
     resetPassword: build.mutation<ApiResponse, ResetPasswordFormType>({
-      // query: data => ({
-      //   url: '/auth/reset-password',
-      //   method: 'POST',
-      //   body: data,
-      // }),
-
-      queryFn: async () => ({
-        data: {
-          message: 'Password Reset Successfully place login ',
-          success: true,
-        },
+      query: data => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body: data,
       }),
     }),
 
-
-    // Sign Out
+    /*-------------------------------*
+     *        sign Out
+     *-------------------------------*/
     signOut: build.mutation<ApiResponse, void>({
-      // query: () => ({
-      //   url: '/auth/signout',
-      //   method: 'POST',
-      // }),
-      // invalidatesTags: ['user'],
-      queryFn: async () => ({
-        data: {
-          message: 'Successfully SignOut',
-          success: true,
-        },
+      query: () => ({
+        url: '/auth/signout',
+        method: 'POST',
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.resetApiState());
+        } catch {}
+      },
     }),
   }),
 });

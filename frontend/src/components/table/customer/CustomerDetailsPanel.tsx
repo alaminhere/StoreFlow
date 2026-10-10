@@ -50,7 +50,7 @@ const CustomerDetailsPanel = ({
             value={customer?.totalDue ?? ''}
           />
         </div>
-        {/* Customer payment history */}{' '}
+        {/* customer payment history */}{' '}
         <h4 className="mt-5">Payment History</h4>
         <div className=" space-y-3">
           {CUSTOMER_PAYMENT.map(item => (
@@ -58,7 +58,7 @@ const CustomerDetailsPanel = ({
               key={item.id}
               amount={item.amount}
               date={formatDate(item.createdAt)}
-              historyId={`SaleID #${item.saleId}`}
+              historyId={`${item.saleId}`}
             />
           ))}
         </div>

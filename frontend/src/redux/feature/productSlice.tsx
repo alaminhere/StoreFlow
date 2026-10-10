@@ -1,14 +1,16 @@
-
-
-import { baseApi } from './baseApi';
-import { PRODUCTS, mockProductSupplier, productList } from '@/mocks/product';
-import { CreateProduct, Product,    ProductSupplier,    UpdateProduct } from '@/types/product.types';
+import { baseApi } from './baseApi'; 
+import {
+  CreateProduct,
+  Product,
+  ProductSupplier,
+  UpdateProduct,
+} from '@/types/product.types';
 
 type ProductApiResponse = {
   message: string;
   success: boolean;
   data: {
-    Products: Product[];
+    products: Product[];
     totalPage?: number;
   };
 };
@@ -50,48 +52,29 @@ export const productApi = baseApi.injectEndpoints({
      * fetch all products with pagination
      *-----------------------------------------*/
     allProduct: build.query<ProductApiResponse, ProductQueryParams>({
-      // query: params => {
-      //   const query = new URLSearchParams();
-      //
-      //   if (params?.search) {
-      //     query.set('search', params.search);
-      //   }
-      //
-      //   if (params?.page) {
-      //     query.set('page', params.page.toString());
-      //   }
-      //
-      //   if (params?.stock) {
-      //     query.set('stock', params.stock);
-      //   }
-      //
-      //   if (params?.category) {
-      //     query.set('category', params.category);
-      //   }
-      //
-      //   if (params?.brand) {
-      //     query.set('brand', params.brand);
-      //   }
-      //
-      //   return {
-      //     url: `/product?${query.toString()}`,
-      //     method: 'GET',
-      //   };
-      // },
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: {
-            Products: PRODUCTS,
-            totalPage: 5,
-          },
-        },
-      }),
-
-      providesTags: ['product', 'stockMovement'],
+      query: params => {
+        const query = new URLSearchParams();
+        if (params?.search) {
+          query.set('search', params.search);
+        }
+        if (params?.page) {
+          query.set('page', params.page.toString());
+        }
+        if (params?.stock) {
+          query.set('stock', params.stock);
+        }
+        if (params?.category) {
+          query.set('category', params.category);
+        }
+        if (params?.brand) {
+          query.set('brand', params.brand);
+        }
+        return {
+          url: `/product?${query.toString()}`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['product'],
     }),
 
     /*-----------------------------------------*
@@ -99,46 +82,23 @@ export const productApi = baseApi.injectEndpoints({
      * options
      *-----------------------------------------*/
     productList: build.query<ProductListApiResponse, void>({
-      // API: Fetch product list
-      // query: () => ({
-      //   url: '/product/list',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: productList,
-        },
+      query: () => ({
+        url: '/product/list',
+        method: 'GET',
       }),
-
-      providesTags: ['product', 'stockMovement'],
+      providesTags: ['product'],
     }),
-
 
     /*-----------------------------------------*
      * fetch suppliers  a single product
      *-----------------------------------------*/
     productSupplier: build.query<ProductSupplierApiResponse, { id: string }>({
-      // query: ({id}) => ({
-      //   url: '/product/${id}/suppliers ',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: mockProductSupplier
-        }
+      query: ({ id }) => ({
+        url: `/product/${id}/suppliers`,
+        method: 'GET',
       }),
-
-      providesTags: ['supplier'],
+      providesTags: ['productSupplier'],
     }),
-
 
     /*-----------------------------------------*
      * create a new product
@@ -149,8 +109,7 @@ export const productApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-
-      invalidatesTags: ['product'],
+      invalidatesTags: ['product', 'inventory'],
     }),
 
     /*-----------------------------------------*
@@ -162,8 +121,7 @@ export const productApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-
-      invalidatesTags: ['product'],
+      invalidatesTags: ['product', 'productSupplier', 'inventory'],
     }),
 
     /*-----------------------------------------*
@@ -175,8 +133,7 @@ export const productApi = baseApi.injectEndpoints({
         method: 'DELETE',
         body: data,
       }),
-
-      invalidatesTags: ['product'],
+      invalidatesTags: ['product', 'productSupplier', 'inventory'],
     }),
   }),
 });

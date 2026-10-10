@@ -9,7 +9,6 @@ const page = () => {
         title=" Settings"
         description="A quick snapshot of my settings."
       />
-
       <SettingMenu />
     </section>
   );

@@ -1,6 +1,5 @@
-import { CreateStockMovement, StockMovement } from '@/types/product.types';
 import { baseApi } from './baseApi';
-import { stockMovements } from '@/mocks/product';
+import { CreateStockMovement, StockMovement } from '@/types/product.types';
 
 type StockMovementListResponse = {
   message: string;
@@ -29,45 +28,28 @@ type MovementQueryParams = {
 
 export const movementApi = baseApi.injectEndpoints({
   endpoints: build => ({
-
-
     /*-----------------------------------------*
-   * fetch all stock movement history
-   *-----------------------------------------*/
-    getAllStockMovement: build.query<StockMovementListResponse, MovementQueryParams>(
-      {
-        // query: params => {
-        //   const query = new URLSearchParams();
-        //
-        //   if (params?.search) {
-        //     query.set('search', params.search);
-        //   }
-        //
-        //   if (params?.page) {
-        //     query.set('page', params.page.toString());
-        //   }
-        //
-        //   return {
-        //     url: `/movement?${query.toString()}`,
-        //     method: 'GET',
-        //   };
-        // },
-
-        // Mock: Keep for frontend development
-        queryFn: async () => ({
-          data: {
-            message: '',
-            success: true,
-            data: {
-              movements: stockMovements,
-              totalPage: 5,
-            },
-          },
-        }),
-
-        providesTags: ['stockMovement'],
+     * fetch all stock movement history
+     *-----------------------------------------*/
+    getAllStockMovement: build.query<
+      StockMovementListResponse,
+      MovementQueryParams
+    >({
+      query: params => {
+        const query = new URLSearchParams();
+        if (params?.search) {
+          query.set('search', params.search);
+        }
+        if (params?.page) {
+          query.set('page', params.page.toString());
+        }
+        return {
+          url: `/movement?${query.toString()}`,
+          method: 'GET',
+        };
       },
-    ),
+      providesTags: ['stockMovement'],
+    }),
     /*-----------------------------------------*
      * creates a new stock movement record.
      *-----------------------------------------*/
@@ -78,7 +60,7 @@ export const movementApi = baseApi.injectEndpoints({
         body: data,
       }),
 
-      invalidatesTags: ['stockMovement'],
+      invalidatesTags: ['stockMovement', 'product', 'inventory'],
     }),
 
     /*-----------------------------------------*
@@ -86,28 +68,14 @@ export const movementApi = baseApi.injectEndpoints({
      * for a specific product.
      *-----------------------------------------*/
     SingleStockMovements: build.query<ProductStockMovementResponse, string>({
-      // query: productId => ({
-      //   url: `/movement/${productId}`,
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: stockMovements,
-        },
+      query: productId => ({
+        url: `/movement/${productId}`,
+        method: 'GET',
       }),
-
       providesTags: ['stockMovement'],
     }),
-
-
-
   }),
 });
-
 
 export const {
   useGetAllStockMovementQuery,

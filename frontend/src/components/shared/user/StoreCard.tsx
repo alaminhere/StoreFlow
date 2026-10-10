@@ -33,7 +33,7 @@ const StoreCard = ({ store, onOpen }: StoreCardProps) => {
   const { initials } = getInitials(store.name);
 
   return (
-    <Card className="space-y-5">
+    <Card className="space-y-5 cursor-pointer bg-primary-fade" onClick={onOpen}>
       <div className="flex items-center gap-3">
         <div
           className={clsx(
@@ -44,13 +44,11 @@ const StoreCard = ({ store, onOpen }: StoreCardProps) => {
         >
           {initials}
         </div>
-
         <div className="min-w-0">
           <h4 className="truncate">{store.name}</h4>
           <p className="p14 truncate">{store.email}</p>
         </div>
       </div>
-
       <div className="flex items-center justify-between">
         <span
           className={clsx(
@@ -60,10 +58,8 @@ const StoreCard = ({ store, onOpen }: StoreCardProps) => {
         >
           {store.role}
         </span>
-
         <button
           type="button"
-          onClick={onOpen}
           className={clsx(
             roleLink[store.role],
             'p14 cursor-pointer px-2.5 py-1 font-medium',

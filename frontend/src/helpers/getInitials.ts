@@ -13,9 +13,7 @@ const getInitials = (name: string) => {
   const hash = name
     .split('')
     .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
   const color = colors[hash % colors.length];
-
   return {
     color,
     initials: name.slice(0, 2).toUpperCase(),

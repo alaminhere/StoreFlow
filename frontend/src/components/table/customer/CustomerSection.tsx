@@ -34,13 +34,9 @@ const CustomerSection = () => {
   // manage customer edit form
   const [isEditFormOpen, setIsEditFormOpen] = useState<boolean>(false);
   const [selectedForEdit, setSelectedForEdit] = useState<Customer | null>(null);
-
-  // manage selected customer for details
   const [selectedForDetails, setSelectedForDetails] = useState<Customer | null>(
     null,
   );
-
-  // manage customer selection for bulk actions
   const [selectedForDelete, setSelectedForDelete] = useState<string[]>([]);
 
   const allChecked =

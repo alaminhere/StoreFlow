@@ -82,7 +82,6 @@ const ProductForm = ({ product, setOpen, open }: Props) => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrevUrls(product.image);
   }, [product, CATEGORY, BRAND, reset]);
-
   // Upload image
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -134,12 +133,10 @@ const ProductForm = ({ product, setOpen, open }: Props) => {
       handleAlert(false, 'Please upload an image');
       return;
     }
-
     const payload = {
       ...data,
       image: prevUrls,
     };
-    console.log(payload);
     try {
       const res = isEdit
         ? await updateProduct({
@@ -304,6 +301,7 @@ const ProductForm = ({ product, setOpen, open }: Props) => {
                 placeholder="0"
                 {...register('stock', {
                   required: 'Stock is required',
+                  valueAsNumber: true,
                 })}
                 error={errors.stock}
               />
@@ -315,6 +313,7 @@ const ProductForm = ({ product, setOpen, open }: Props) => {
                 placeholder="e.g 10"
                 {...register('minimumStockLevel', {
                   required: 'Minimum stock level is required',
+                  valueAsNumber: true,
                 })}
                 error={errors.minimumStockLevel}
               />
@@ -328,6 +327,7 @@ const ProductForm = ({ product, setOpen, open }: Props) => {
                 placeholder="0.00"
                 {...register('price', {
                   required: 'Price is required',
+                  valueAsNumber: true,
                 })}
                 error={errors.price}
               />
@@ -338,6 +338,7 @@ const ProductForm = ({ product, setOpen, open }: Props) => {
                 placeholder="0.00"
                 {...register('sellingPrice', {
                   required: 'Selling price is required',
+                  valueAsNumber: true,
                 })}
                 error={errors.sellingPrice}
               />

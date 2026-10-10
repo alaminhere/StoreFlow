@@ -7,8 +7,6 @@ import SupplierPaymentsTable from './SupplierPaymentsTable';
 import CustomerPaymentsTable from './CustomerPaymentsTable';
 import Loading from '@/components/shared/Loading';
 
-
-
 type TabKey = 'suppliers' | 'customers';
 
 const TABS = [
@@ -54,14 +52,20 @@ const PaymentsSection = () => {
         })}
       </div>
       <div className="overflow-hidden rounded-xl border border-border bg-surface mt-5">
-        {activeTab === 'customers' && (<Suspense fallback={<Loading />}><CustomerPaymentsTable /></Suspense>)}
-        {activeTab === 'suppliers' && <Suspense fallback={<Loading />}><SupplierPaymentsTable /></Suspense>}
+        {activeTab === 'customers' && (
+          <Suspense fallback={<Loading />}>
+            <CustomerPaymentsTable />
+          </Suspense>
+        )}
+        {activeTab === 'suppliers' && (
+          <Suspense fallback={<Loading />}>
+            <SupplierPaymentsTable />
+          </Suspense>
+        )}
       </div>
     </>
   );
 };
 
-
-
 //
-export default PaymentsSection
+export default PaymentsSection;

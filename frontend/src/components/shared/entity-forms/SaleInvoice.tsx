@@ -50,7 +50,6 @@ const SaleInvoice = ({ open, invoice, setOpen, setInvoice }: Props) => {
         >
           <div className="w-full p-5">
             {/* Invoice Header */}
-
             <div className="flex flex-col sm:flex-row justify-between gap-5 mb-6">
               <div className="w-full">
                 <p className={styles.label}>CUSTOMER</p>

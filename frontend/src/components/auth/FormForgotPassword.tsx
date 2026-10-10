@@ -13,7 +13,6 @@ const FormForgotPassword = () => {
   const router = useRouter();
   const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
 
-
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = e.currentTarget.email.value;

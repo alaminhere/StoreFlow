@@ -7,12 +7,11 @@ import Pagination from '../Pagination';
 import PurchasesTable from './PurchaseTable';
 import PurchasesDetailsPanel from './PurchaseDetailsPanel';
 
-import { useAllPurchaseQuery } from '@/redux/feature/purchaseSlice';
-import { Purchase } from '@/types/purchases.types';
+import { useAllPurchaseQuery } from '@/redux/feature/purchaseSlice'; 
 
 const PurchaseSection = () => {
   const searchParams = useSearchParams();
-  const page = Number(searchParams.get('page') || '1');
+  const page = Number(searchParams.get('page') || 1);
   const search = searchParams.get('search') || '';
 
   // fetch purchases with search and pagination and delete purchase mutation
@@ -21,24 +20,25 @@ const PurchaseSection = () => {
     search,
   });
 
-  const PURCHASES = purchaseData?.data.purchases ?? [];
+  const PURCHASES = purchaseData?.data.purchase ?? [];
   const totalPage = purchaseData?.data.totalPage ?? 0;
-
   // manage selected purchase for details panel
-  const [selectedForDetails, setSelectedForDetails] = useState<Purchase | null>(
+
+  const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(
     null,
   );
+  const selectedPurchase =
+    PURCHASES.find(p => p.id === selectedPurchaseId) ?? null;
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-surface">
       <PurchasesTable
         purchases={PURCHASES}
-        setSelectedForDetails={setSelectedForDetails}
+        setSelectedPurchaseId={setSelectedPurchaseId}
       />
-
       <PurchasesDetailsPanel
-        setPurchase={setSelectedForDetails}
-        purchase={selectedForDetails}
+        setPurchase={setSelectedPurchaseId}
+        purchase={selectedPurchase}
       />
       {!isLoading && <Pagination total={totalPage} />}
     </div>

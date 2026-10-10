@@ -113,8 +113,7 @@ const ReturnDetailsPanel = ({
           label={`${type} Address`}
           value={returnData?.party.address ?? ''}
         />
-
-        {/* Date / Payment */}
+        {/* date / payment */}
         <div className="mb-3 flex flex-wrap justify-between gap-4 rounded-md bg-accent-bg px-4 py-2">
           <div>
             <p className={styles.rowLabel}>Purchase Date</p>
@@ -141,7 +140,7 @@ const ReturnDetailsPanel = ({
           </div>
         </div>
 
-        {/* Items */}
+        {/* items */}
         <div className="mb-6 overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -166,7 +165,7 @@ const ReturnDetailsPanel = ({
           </table>
         </div>
 
-        {/* Totals */}
+        {/* totals */}
         <div className="mb-6 flex justify-end">
           <div className="w-full">
             <div className={styles.summaryRow}>
@@ -200,7 +199,7 @@ const ReturnDetailsPanel = ({
             ) : null}
           </div>
         </div>
-        {/* Invoice Actions */}
+        {/* invoice Actions */}
         <div className="grid grid-cols-2 gap-3 border-t border-border pt-5">
           <Button
             onClick={handleDownload}
@@ -209,7 +208,6 @@ const ReturnDetailsPanel = ({
           >
             Download Invoice
           </Button>
-
           <Button
             loading={isSending}
             disabled={isSending}

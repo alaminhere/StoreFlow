@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import Button from '../../ui/button';
 import {
-  Award, 
+  Award,
   CreditCard,
   LayoutDashboard,
   LineChart,
@@ -108,19 +108,24 @@ const STORE_MENU = [
     name: 'Commerce',
     items: [
       {
+        name: 'POS',
+        icon: Monitor,
+        href: '/dashboard/pos',
+        permission: ['POS', 'view', 'create'],
+      },
+    ],
+  },
+  {
+    name: 'Transactions',
+    items: [
+      {
         name: 'Purchases',
         icon: ShoppingCart,
         href: '/dashboard/purchases',
         permission: ['PURCHASES', 'view', 'create', 'edit', 'delete'],
       },
       {
-        name: 'POS',
-        icon: Monitor,
-        href: '/dashboard/pos',
-        permission: ['POS', 'view', 'create'],
-      },
-      {
-        name: 'Sales History',
+        name: 'Sales',
         icon: History,
         href: '/dashboard/sales',
         permission: ['SALES_HISTORY', 'view', 'edit', 'delete'],
@@ -146,7 +151,7 @@ const STORE_MENU = [
       {
         name: 'Analytics',
         icon: LineChart,
-        href: '',
+        href: '/dashboard/analytics',
         permission: ['ANALYTICS', 'view'],
       },
     ],
@@ -155,7 +160,6 @@ const STORE_MENU = [
   {
     name: 'System',
     items: [
-
       {
         name: 'Member & Roles',
         icon: UserCog,
@@ -175,18 +179,14 @@ const STORE_MENU = [
 const StoreMenu = () => {
   const router = useRouter();
   const pathname = usePathname();
-
-  const [closeStore, { isLoading }] = useCloseStoreMutation();
   const { can } = useCurrentStoreContext();
+  const [closeStore, { isLoading }] = useCloseStoreMutation();
 
   const onSignOut = async () => {
     try {
       const res = await closeStore().unwrap();
-
       if (!res) return;
-
       handleAlert(res.success, res.message);
-
       if (res.success) {
         router.push('/profile');
       }
@@ -197,7 +197,7 @@ const StoreMenu = () => {
 
   return (
     <>
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 scrollbar-thumb-border scrollbar-thin">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 scrollbar-thumb-border scrollbar-thin">
         {STORE_MENU.map((menu, index) => {
           const visibleItems = menu.items.filter(item =>
             can(
@@ -215,14 +215,13 @@ const StoreMenu = () => {
 
               {visibleItems.map((item, index) => {
                 const Icon = item.icon;
-
                 return (
                   <Link href={item.href} key={index}>
                     <MenuItem
                       active={pathname === item.href}
                       icon={<Icon size={14} />}
                       label={item.name}
-                      className="rounded-md text-base! py-1.5!"
+                      className="rounded-md mt-1"
                     />
                   </Link>
                 );
@@ -241,7 +240,7 @@ const StoreMenu = () => {
         onClick={onSignOut}
       >
         <LogOut size={15} />
-        live Store
+        Exit Store
       </Button>
     </>
   );

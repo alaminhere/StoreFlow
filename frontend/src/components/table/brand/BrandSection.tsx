@@ -40,13 +40,11 @@ const BrandSection = () => {
 
   // manage brand selection for bulk actions
   const [selected, setSelected] = useState<string[]>([]);
-
   const allChecked = BRANDS.length > 0 && selected.length === BRANDS.length;
-
   const toggleAll = () => {
     setSelected(allChecked ? [] : BRANDS.map(brand => brand.id));
   };
-
+  
   const toggleOne = (id: string) => {
     setSelected(prev =>
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id],

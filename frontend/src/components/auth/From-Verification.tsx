@@ -22,17 +22,14 @@ const FromVerification = () => {
   // sign-up OTP verification
   const [verifySignUp, { isLoading: isLoadingVerify }] =
     useVerifySignUpMutation();
-
   // forgot-password OTP verification
   const [verifyForgotPassword, { isLoading: isLoadingForgot }] =
     useVerifyForgotPasswordMutation();
-
   const isLoading = isLoadingForgot || isLoadingVerify;
-
   // OTP verification submission
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const otp = e.currentTarget.otp.value;
 
     try {

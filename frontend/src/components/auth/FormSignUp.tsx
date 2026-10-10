@@ -49,7 +49,7 @@ const FormSignUp = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4 px-1">
       <div className="mb-8 w-full md:block">
-        <h2>Create account</h2>
+        <h3>Create account</h3>
         <p>Start managing your inventory today</p>
       </div>
       <Input

@@ -40,16 +40,17 @@ const ProductsSection = () => {
   const { data: productData, isLoading } = useAllProductQuery(query);
   const [deleteProducts] = useDeleteProductsMutation();
 
-  const PRODUCTS = productData?.data.Products ?? [];
+  const PRODUCTS = productData?.data.products ?? [];
   const TOTAL_PAGE = productData?.data.totalPage ?? 1;
 
   // manage selected product for details
   const [selectedProductForDetails, setSelectedProductForDetails] =
     useState<Product | null>(null);
 
-
   // manage select product id for product suppliers
-  const [productIdForSupplier, setProductIdIdForSupplier] = useState<string | null>(null);
+  const [productIdForSupplier, setProductIdIdForSupplier] = useState<
+    string | null
+  >(null);
 
   // manage product edit form
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
@@ -65,7 +66,6 @@ const ProductsSection = () => {
   const [selected, setSelected] = useState<string[]>([]);
 
   const allChecked = PRODUCTS.length > 0 && selected.length === PRODUCTS.length;
-
   const toggleAll = () => {
     setSelected(allChecked ? [] : PRODUCTS.map(product => product.id));
   };
