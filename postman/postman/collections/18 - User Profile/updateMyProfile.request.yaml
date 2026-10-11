@@ -1,0 +1,15 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/user/me/profile
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+        "name":"alamin",
+        "phone":"1234",
+        "email":"hello1@alaminhere.com",
+        "address":"tos"
+
+    }
+order: 648043089873018

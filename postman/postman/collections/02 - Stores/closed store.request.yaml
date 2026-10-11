@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8000/api/v1/store/closed
+method: POST
+order: 3919095090158897

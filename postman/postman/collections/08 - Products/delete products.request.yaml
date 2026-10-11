@@ -1,0 +1,13 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/product
+method: DELETE
+body:
+  type: json
+  content: |-
+    {
+        "ids": [
+            "prod_004", "prod_005"
+        ]
+    }
+order: 3808002632341602

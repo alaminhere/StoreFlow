@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/payment/sale/sale_001
+method: GET
+order: 3178674814739738

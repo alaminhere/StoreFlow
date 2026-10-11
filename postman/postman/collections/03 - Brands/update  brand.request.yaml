@@ -1,0 +1,11 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/brand/brand_009
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+     "name":"f-brand"
+    }
+order: 3528966010331525

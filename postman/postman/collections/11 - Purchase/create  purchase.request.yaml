@@ -1,0 +1,39 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/purchase
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "supplierId": "supp_001",
+        "items": [
+            {
+                "productId": "prod_002",
+                "productName": "Samsung Galaxy S24 256GB",
+                "quantity": 10,
+                "price": 78000,
+                "total": 780000
+            },
+            {
+                "productId": "prod_003",
+                "productName": "Xiaomi Redmi Note 13",
+                "quantity": 20,
+                "price": 22000,
+                "total": 440000
+            },
+            {
+                "productId": "prod_004",
+                "productName": "Apple MacBook Air M2 256GB",
+                "quantity": 5,
+                "price": 105000,
+                "total": 525000
+            }
+        ],
+        "paymentMethod": "CASH",
+        "subtotal": 2595000,
+        "discount": 0,
+        "total": 2595000,
+        "paid": 2000000
+    }
+order: 3499978963358546

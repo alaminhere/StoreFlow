@@ -91,10 +91,6 @@ lerna-debug.log*
 
 
 # Postman
-/postman/
-postman/
-*.postman_collection.json
-*.postman_environment.json
-
-#
-*.md
+ 
+ 
+backend/.agents/

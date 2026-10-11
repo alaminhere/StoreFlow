@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/customer
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name": "exmple",
+        "email": "a@a.com",
+        "phone": "01610000005",
+        "address": "alamin"
+    }
+order: 3499978963358546

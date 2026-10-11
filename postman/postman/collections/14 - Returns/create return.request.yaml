@@ -1,0 +1,20 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/return
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "type": "PURCHASE_RETURN",
+        "referenceId": "pur_011",
+        "reason": "Product damaged on arrival",
+        "condition": "RESTOCK",
+        "items": [
+            {
+                "productId": "prod_002",
+                "quantity": 1
+            }
+        ]
+    }
+order: 3499978963358546

@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/user/me/delete
+method: POST
+order: 648043089875018

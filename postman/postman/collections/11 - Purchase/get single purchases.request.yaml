@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/purchase/pur_001
+method: GET
+order: 1999264285842031

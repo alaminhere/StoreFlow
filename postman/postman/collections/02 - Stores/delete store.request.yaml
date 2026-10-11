@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8000/api/v1/store/
+method: DELETE
+order: 4338037108151004

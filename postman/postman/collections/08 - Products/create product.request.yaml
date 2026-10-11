@@ -1,0 +1,24 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/product
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name": "Light grey",
+        "image": {
+            "url": "https://res.cloudinary.com/dcoqpsz6e/image/upload/v1791359258/rswbqoxrmrohjs3ginp9.png",
+            "public_id": "rswbqoxrmrohjs3ginp9"
+        },
+        "sku": "WH-0013drdf",
+        "barcode": "8945001234567",
+        "category": "laptop-cat_002",
+        "brand": "Xiaomi",
+        "description": "lorem",
+        "price": 5500,
+        "sellingPrice": 55,
+        "stock": 10,
+        "minimumStockLevel": 5
+    }
+order: 3499978963358546

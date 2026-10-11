@@ -1,0 +1,19 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/store
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name": "StoreFlow Demo Store",
+        "email": "demo@example.com",
+        "phone": "+8801712345678",
+        "logo": {
+            "url": "https://res.cloudinary.com/demo/image/upload/v1/storeflow/logo.png",
+            "public_id": "storeflow/logo"
+        },
+        "address": "123 Gulshan Avenue, Gulshan-2, Dhaka 1212, Bangladesh",
+        "tagline": "Your Trusted Retail Partner Since 2020"
+    }
+order: 1791178703415

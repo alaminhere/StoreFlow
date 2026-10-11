@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/movement
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "productId": "prod_002",
+      "quantity": 10,
+      "type": "STOCK_IN",
+      "reason": "Found in warehouse"
+    }
+order: 3499978963358546

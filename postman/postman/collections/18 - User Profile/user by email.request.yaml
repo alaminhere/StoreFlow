@@ -1,0 +1,7 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/user/email?email=alamin.developer.portfolio@gmail.com
+method: GET
+queryParams:
+  email: alamin.developer.portfolio@gmail.com
+order: 648043089872018

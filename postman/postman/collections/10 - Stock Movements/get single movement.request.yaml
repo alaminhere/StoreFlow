@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/movement/prod_004
+method: GET
+order: 1911630055388079

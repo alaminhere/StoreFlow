@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/customer/cat_011
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+        "name": "rakib",
+        "email": "rakib@d.com",
+        "phone": "12343",
+        "address": "alamin"
+    }
+order: 3528966010331525

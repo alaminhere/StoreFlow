@@ -1,0 +1,11 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/auth/verify-signup
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "otp": "879889"
+    }
+order: 2004748349097926

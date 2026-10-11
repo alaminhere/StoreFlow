@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/return?search=&page&party=customer
+method: GET
+queryParams:
+  search: ""
+  page: null
+  party: customer
+order: 648043089871018

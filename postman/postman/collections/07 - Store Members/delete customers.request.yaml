@@ -1,0 +1,13 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/member
+method: DELETE
+body:
+  type: json
+  content: |-
+    {
+        "ids": [
+            "member_004"
+        ]
+    }
+order: 3570244156678446

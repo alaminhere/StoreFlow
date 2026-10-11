@@ -1,0 +1,8 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/brand?page=1&search=s
+method: GET
+queryParams:
+  page: "1"
+  search: s
+order: 1791179494070

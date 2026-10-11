@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/sale?search=exmple&page=12
+method: GET
+queryParams:
+  - key: search
+    value: exmple
+    disabled: false
+    description: ""
+  - key: page
+    value: "12"
+    disabled: false
+    description: ""
+order: 1791179494070

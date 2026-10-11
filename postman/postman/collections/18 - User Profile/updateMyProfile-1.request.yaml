@@ -1,0 +1,14 @@
+$kind: http-request
+name: updateMyProfile
+description: ""
+url: http://localhost:8000/api/v1/user/me/password
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+        "currentPassword": "12345",
+        "newPassword": "12345",
+        "confirmPassword": "12345"
+    }
+order: 648043089874018

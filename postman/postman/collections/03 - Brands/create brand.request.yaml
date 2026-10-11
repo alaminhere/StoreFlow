@@ -1,0 +1,11 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/brand
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name":"hafu brand"
+    }
+order: 3499978963358546

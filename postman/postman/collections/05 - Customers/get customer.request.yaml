@@ -1,0 +1,8 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/customer?page=1&search=a
+method: GET
+queryParams:
+  page: "1"
+  search: a
+order: 1791179494070

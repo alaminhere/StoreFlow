@@ -1,0 +1,15 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/supplier/supp_011
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+        "name": "exmple",
+        "shopName": "new shop",
+        "email": "ex@d.com",
+        "phone": "12343",
+        "address": "dhaka"
+    }
+order: 3528966010331525

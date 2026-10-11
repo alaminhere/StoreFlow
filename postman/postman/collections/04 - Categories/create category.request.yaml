@@ -1,0 +1,11 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/category
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name":"exmple"
+    }
+order: 3499978963358546

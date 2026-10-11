@@ -1,0 +1,11 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/brand
+method: DELETE
+body:
+  type: json
+  content: |2-
+     {
+      "ids": [ "brand_012" ]
+    }
+order: 3570244156678446

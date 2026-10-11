@@ -1,0 +1,10 @@
+$kind: http-request
+url: http://localhost:8000/api/v1/store
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+        "name": "Example Store"
+    }
+order: 3905152826694188

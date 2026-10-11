@@ -1,0 +1,7 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/payment/supplier?page=1
+method: GET
+queryParams:
+  page: "1"
+order: 2073910445976159

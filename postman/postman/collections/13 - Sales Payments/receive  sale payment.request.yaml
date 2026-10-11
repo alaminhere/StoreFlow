@@ -1,0 +1,13 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/payment/sale/receive
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "saleId": "sale_001",
+        "amount": 100,
+        "paymentMethod": "CASH"
+    }
+order: 3499978963358546

@@ -1,0 +1,11 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/member/member_004
+method: PATCH
+body:
+  type: json
+  content: |-
+    {
+        "role": "MANAGER"
+    }
+order: 3528966010331525

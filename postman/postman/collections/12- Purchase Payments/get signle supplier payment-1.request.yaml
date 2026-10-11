@@ -1,0 +1,6 @@
+$kind: http-request
+name: get signle supplier payment
+description: ""
+url: http://localhost:8000/api/v1/payment/supplier/supp_003
+method: GET
+order: 2280861270744641

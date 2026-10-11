@@ -1,0 +1,25 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/sale
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "customerId": "cust_005",
+        "items": [
+            {
+                "productId": "prod_002",
+                "productName": "Xiaomi Redmi Note 13",
+                "quantity": 1,
+                "price": 85000.00,
+                "total": 85000.00
+            }
+        ],
+        "paymentMethod": "CASH",
+        "subtotal": 85000.00,
+        "discount": 0,
+        "total": 85000.00,
+        "paid": 10000
+    }
+order: 3499978963358546

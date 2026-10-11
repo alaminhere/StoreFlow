@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/category/list
+method: GET
+order: 2952752905398477
