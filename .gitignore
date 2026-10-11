@@ -72,11 +72,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 
-# Misc
-
+ 
 .DS_Store
 *.pem
-
+!backend/certs/ca.pem
 
 # Vercel
 
