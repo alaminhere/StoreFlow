@@ -155,7 +155,10 @@ export const createReturn = async (
           const movements = [];
 
           for (const item of data.items) {
-            const p = productMap.get(item.productId)!;
+            const currentProduct = await tx.product.findUnique({
+              where: { storeId_id: { storeId, id: item.productId } },
+            });
+            if (!currentProduct) continue;
 
             const updated = await tx.product.updateMany({
               where: {
@@ -168,14 +171,19 @@ export const createReturn = async (
                   ? { increment: item.quantity }
                   : { decrement: item.quantity },
                 isLowStock: computeIsLowStock(
-                  isSale ? p.stock + item.quantity : p.stock - item.quantity,
-                  p.minimumStockLevel,
+                  isSale
+                    ? currentProduct.stock + item.quantity
+                    : currentProduct.stock - item.quantity,
+                  currentProduct.minimumStockLevel,
                 ),
               },
             });
 
             if (updated.count === 0) {
-              throw new ApiError(400, `insufficient stock for '${p.name}'`);
+              throw new ApiError(
+                400,
+                `insufficient stock for '${currentProduct.name}'`,
+              );
             }
 
             movements.push({
@@ -183,10 +191,10 @@ export const createReturn = async (
               productId: item.productId,
               type: 'RETURN' as const,
               reason: data.reason,
-              beforeStock: p.stock,
+              beforeStock: currentProduct.stock,
               afterStock: isSale
-                ? p.stock + item.quantity
-                : p.stock - item.quantity,
+                ? currentProduct.stock + item.quantity
+                : currentProduct.stock - item.quantity,
               returnId: newId,
             });
           }
@@ -201,29 +209,33 @@ export const createReturn = async (
 
         if (adjustedDue.greaterThan(0)) {
           if (isSale) {
-            await tx.salePayment.create({
-              data: {
-                storeId,
-                customerId,
-                saleId: data.referenceId,
-                amount: adjustedDue,
-                paymentMethod: 'RETURN_ADJUSTMENT',
-              },
-            });
+            if (customerId) {
+              await tx.salePayment.create({
+                data: {
+                  storeId,
+                  customerId,
+                  saleId: data.referenceId,
+                  amount: adjustedDue,
+                  paymentMethod: 'RETURN_ADJUSTMENT',
+                },
+              });
+            }
             await tx.sale.update({
               where: { storeId_id: { storeId, id: data.referenceId } },
               data: { paid: { increment: adjustedDue } },
             });
           } else {
-            await tx.purchasePayment.create({
-              data: {
-                storeId,
-                supplierId,
-                purchaseId: data.referenceId,
-                amount: adjustedDue,
-                paymentMethod: 'RETURN_ADJUSTMENT',
-              },
-            });
+            if (supplierId) {
+              await tx.purchasePayment.create({
+                data: {
+                  storeId,
+                  supplierId,
+                  purchaseId: data.referenceId,
+                  amount: adjustedDue,
+                  paymentMethod: 'RETURN_ADJUSTMENT',
+                },
+              });
+            }
             await tx.purchase.update({
               where: { storeId_id: { storeId, id: data.referenceId } },
               data: { paid: { increment: adjustedDue } },
@@ -235,7 +247,7 @@ export const createReturn = async (
         const remainingDue = dueAmount.minus(adjustedDue);
 
         const fetched = await tx.return.findUniqueOrThrow({
-          where: { id: newId, storeId },
+          where: { storeId_id: { storeId, id: newId } },
           select: {
             id: true,
             type: true,

@@ -419,7 +419,7 @@ model StockMovement {
 }
 
 model Return {
-  id           String          @id @default(cuid())
+  id           String
   storeId      String
   type         ReturnType
   referenceId  String
@@ -436,6 +436,8 @@ model Return {
 
   items ReturnItem[]
 
+  @@id([storeId, id])
+  @@unique([id, storeId])
   @@index([storeId, type])
   @@index([storeId, referenceId])
 }
@@ -450,7 +452,7 @@ model ReturnItem {
   price       Decimal @db.Decimal(12, 2)
   total       Decimal @db.Decimal(12, 2)
 
-  return  Return  @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  return  Return  @relation(fields: [returnId, storeId], references: [id, storeId], onDelete: Cascade)
   product Product @relation(fields: [productId, storeId], references: [id, storeId])
   store   Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
