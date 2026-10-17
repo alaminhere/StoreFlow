@@ -1,5 +1,4 @@
-import { baseApi } from './baseApi';
-import { categories } from '@/mocks/product';
+import { baseApi } from './baseApi'; 
 import {
   Category,
   CreateCategory,
@@ -41,35 +40,19 @@ export const categoryApi = baseApi.injectEndpoints({
      * fetch category without pagination
      *-----------------------------------------*/
     allCategory: build.query<CategoryResponse, CategoryQueryParams>({
-      // query: params => {
-      //   const query = new URLSearchParams();
-      //
-      //   if (params?.search) {
-      //     query.set('search', params.search);
-      //   }
-      //
-      //   if (params?.page) {
-      //     query.set('page', params.page.toString());
-      //   }
-      //
-      //   return {
-      //     url: `/category?${query.toString()}`,
-      //     method: 'GET',
-      //   };
-      // },
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: {
-            categories,
-            totalPage: 2,
-          },
-        },
-      }),
-
+      query: params => {
+        const query = new URLSearchParams();
+        if (params?.search) {
+          query.set('search', params.search);
+        }
+        if (params?.page) {
+          query.set('page', params.page.toString());
+        }
+        return {
+          url: `/category?${query.toString()}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['category'],
     }),
 
@@ -77,20 +60,10 @@ export const categoryApi = baseApi.injectEndpoints({
      * fetch all categories without pagination
      *-----------------------------------------*/
     categoryList: build.query<CategoryListResponse, void>({
-      // query: () => ({
-      //   url: '/category/list',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: categories,
-        },
+      query: () => ({
+        url: '/category/list',
+        method: 'GET',
       }),
-
       providesTags: ['category'],
     }),
 
@@ -103,7 +76,6 @@ export const categoryApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-
       invalidatesTags: ['category'],
     }),
 
@@ -116,8 +88,7 @@ export const categoryApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-
-      invalidatesTags: ['category'],
+      invalidatesTags: ['category', 'product'],
     }),
 
     /*-----------------------------------------*
@@ -129,7 +100,6 @@ export const categoryApi = baseApi.injectEndpoints({
         method: 'DELETE',
         body: data,
       }),
-
       invalidatesTags: ['category'],
     }),
   }),

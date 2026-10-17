@@ -2,8 +2,8 @@
 export type RangeKey =
   | 'today'
   | 'yesterday'
-  | 'last7'
-  | 'last30'
+  | 'last7days'
+  | 'last30days'
   | 'lastMonth'
   | 'thisYear';
 

@@ -6,7 +6,7 @@ import ProjectInfoButton from '../shared/ProjectInfoButton';
 
 const Hero = () => {
   return (
-    <section className=" bg-surface py-15 pt-20 md:pt-25 ">
+    <section className="py-15 pt-20 md:pt-25 bg-primary-blend ">
       <div className="app-container flex flex-col lg:flex-row justify-between items-center gap-5 md:gap-10">
         <div className="w-full lg:w-[45%] order-2 lg:order-1">
           <div className="mt-5 px-4 py-0.5 border border-primary/40! bg-primary/10! rounded-full w-fit flex justify-center items-center gap-2">
@@ -15,7 +15,9 @@ const Hero = () => {
           </div>
           <h1 className="animate-slide-up  text-text mt-5  ">
             Built to Manage.
-            <span className="text-primary"> Designed to Grow. </span>
+            <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              {' '} Designed to Grow. 
+            </span>
           </h1>
           <p className="animate-slide-up mt-3 md:text-[18px]">
             Track stock, manage sales, generate invoices, and grow your business
@@ -23,11 +25,13 @@ const Hero = () => {
             ready for the world.
           </p>
           <div className="mt-8 flex flex-col md:flex-row  gap-5">
-            <ProjectInfoButton autoOpen className="w-full md:w-fit" >
+            <ProjectInfoButton autoOpen className="w-full md:w-fit">
               Show project info again
-            </ProjectInfoButton >
+            </ProjectInfoButton>
             <Link href={'/signin'}>
-              <Button variant='secondary' size="md" className='w-full'>Start Free Today</Button>
+              <Button variant="secondary" size="md" className="w-full">
+                Start Free Today
+              </Button>
             </Link>
           </div>
         </div>

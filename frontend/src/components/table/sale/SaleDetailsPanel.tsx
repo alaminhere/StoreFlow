@@ -15,7 +15,10 @@ import Select from '@/components/ui/select';
 import getApiErrorMessage from '@/helpers/getApiErrorMessage';
 import { PaymentMethod } from '@/types/payment.types';
 import HistoryCard from '../HistoryCard';
-import { useSaleReceivedPaymentMutation, useSingleSalePaymentsQuery } from '@/redux/feature/payment/customerPaymentSlice';
+import {
+  useSaleReceivedPaymentMutation,
+  useSingleSalePaymentsQuery,
+} from '@/redux/feature/payment/customerPaymentSlice';
 import useInvoiceActions from '@/helpers/invoice/useInvoiceActions';
 
 const styles = {
@@ -34,13 +37,12 @@ const styles = {
 
 type ProductDetailsPanelProps = {
   sales: Sales | null;
-  setSales: (sales: Sales | null) => void;
+  setSales: (sales: string | null) => void;
 };
 const PAYMENT_METHODS = ['CASH', 'BANK_TRANSFER', 'BKASH', 'CARD'];
 
 const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
-  const id = sales?.customerId;
-
+  const id = sales?.id;
   const [saleReceivedPayment] = useSaleReceivedPaymentMutation();
   const { data: storeData } = useGetStoreQuery();
   const { data: saleData } = useSingleSalePaymentsQuery(id!, {
@@ -81,19 +83,16 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
     }
   };
 
-
   return (
     <DetailsModel
       label={`SALE ID : #${sales?.id}`}
       onClose={() => setSales(null)}
       open={!!sales}
     >
-      <div className="w-full p-5">
-        {/* Supplier */}
+      <div className="w-full p-5"> 
         <div className="mb-6 flex flex-col justify-between gap-5 sm:flex-row">
           <div className="w-full">
-            <p className={styles.label}>SUPPLIER</p>
-
+            <p className={styles.label}>SUPPLIER</p> 
             <div className="mt-2 w-full rounded-lg border border-border bg-surface px-4 py-3">
               <Avatar
                 name={sales?.customer?.name}
@@ -101,18 +100,14 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
               />
             </div>
           </div>
-        </div>
-
-        {/* Date / Payment */}
+        </div> 
         <div className="mb-3 flex flex-wrap justify-between gap-4 rounded-md bg-accent-bg px-4 py-2">
           <div>
-            <p className={styles.rowLabel}>Purchase Date</p>
-
+            <p className={styles.rowLabel}>Purchase Date</p> 
             <p className={styles.valueTitle}>
               {formatDate(sales?.createdAt) || 'N/A'}
             </p>
-          </div>
-
+          </div> 
           <div>
             <p className={styles.rowLabel}>Method</p>
             <p className={styles.valueTitle}>{sales?.paymentMethod || 'N/A'}</p>
@@ -120,17 +115,18 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
           <div>
             <p className={styles.rowLabel}>Status</p>
             <span
-              className={`capitalize p12 ${sales?.due === 0
-                ? 'text-success bg-successBg'
-                : 'text-warning bg-warningBg'
-                }`}
+              className={`capitalize p12 ${
+                sales?.due === 0
+                  ? 'text-success bg-successBg'
+                  : 'text-warning bg-warningBg'
+              }`}
             >
               {getInvoiceStatus(sales?.paid ?? 0, sales?.due ?? 0)}
             </span>
           </div>
         </div>
 
-        {/* Items */}
+        {/* items */}
         <div className="mb-6 overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -154,7 +150,7 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
           </table>
         </div>
 
-        {/* Totals */}
+        {/* totals */}
         <div className="mb-6 flex justify-end">
           <div className="w-full">
             <div className={styles.summaryRow}>
@@ -163,7 +159,6 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
                 ৳{sales?.subtotal ?? 0}
               </span>
             </div>
-
             <div className={styles.summaryRow}>
               <span className={styles.summaryLabel}>Discount</span>
               <span className="p14 text-danger">− ৳{sales?.discount ?? 0}</span>
@@ -184,7 +179,7 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
             ) : null}
           </div>
         </div>
-        {/* Record Payment */}
+        {/* record payment */}
         {sales?.due ? (
           <div className="mt-10 w-full flex-1 border-t border-border pt-5 md:max-w-md">
             <h4 className="mb-3">Pay Now</h4>
@@ -197,7 +192,6 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
                   name="amount"
                   defaultValue={0}
                 />
-
                 <Select
                   label="Payment method"
                   name="method"
@@ -214,14 +208,13 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
                   ))}
                 </Select>
               </div>
-
               <Button type="submit" className="w-full">
                 Confirm payment
               </Button>
             </form>
           </div>
         ) : null}
-        {/* Invoice Actions */}
+        {/* invoice actions */}
         <div className="grid grid-cols-2 gap-3 border-t border-border pt-5">
           <Button
             onClick={downloadInvoice}
@@ -230,13 +223,18 @@ const SaleDetailsPanel = ({ sales, setSales }: ProductDetailsPanelProps) => {
           >
             Download Invoice
           </Button>
-          <Button disabled={isSending} loading={isSending} onClick={sendInvoiceByEmail} variant="secondary" className="w-full">
+          <Button
+            disabled={isSending}
+            loading={isSending}
+            onClick={sendInvoiceByEmail}
+            variant="secondary"
+            className="w-full"
+          >
             Email Invoice
           </Button>
         </div>
-        {/* Supplier Payment History */}
+        {/* supplier payment history */}
         <h4 className="my-5 border-t border-border pt-5">Payment History</h4>
-
         <div className="space-y-3">
           {salePayment.map(item => (
             <HistoryCard

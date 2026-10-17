@@ -26,10 +26,10 @@ const COLUMNS = [
 type Props = {
   purchases: Purchase[];
 
-  setSelectedForDetails: (purchase: Purchase | null) => void;
+  setSelectedPurchaseId: (purchase: string | null) => void;
 };
 
-const PurchaseTable = ({ purchases, setSelectedForDetails }: Props) => {
+const PurchaseTable = ({ purchases, setSelectedPurchaseId }: Props) => {
   return (
     <>
       {/* Table */}
@@ -63,7 +63,7 @@ const PurchaseTable = ({ purchases, setSelectedForDetails }: Props) => {
             {purchases?.map(item => {
               return (
                 <Tr key={item?.id}>
-                  <Td>{`PUR- ${item?.id}`}</Td>
+                  <Td>{`${item?.id}`}</Td>
                   <Td className="flex flex-col">
                     <span>{item?.supplier?.name}</span>
                     <span className="text-xs">{item?.supplier?.email}</span>
@@ -77,7 +77,7 @@ const PurchaseTable = ({ purchases, setSelectedForDetails }: Props) => {
                   <Td className="text-right">
                     <button
                       className="cursor-pointer px-3"
-                      onClick={() => setSelectedForDetails(item)}
+                      onClick={() => setSelectedPurchaseId(item.id)}
                     >
                       <History size={15} />
                     </button>

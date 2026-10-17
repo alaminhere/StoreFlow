@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useRef, useEffect, type ReactNode } from 'react';
 import { MoreVertical } from '@/helpers/icon/icon';
@@ -27,9 +26,6 @@ const ActionMenu = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-
-  const handleChildClick = () => setOpen(false);
-
   return (
     <div className="relative flex justify-end" ref={menuRef}>
       <button
@@ -42,7 +38,7 @@ const ActionMenu = ({
 
       {open && (
         <div
-          onClick={handleChildClick}
+          onClick={() => setOpen(false)}
           className={
             className ??
             'absolute right-0 top-full w-44 bg-surface rounded-lg shadow-lg z-20 overflow-hidden'

@@ -3,8 +3,7 @@
 import getInitials from '@/helpers/getInitials';
 import clsx from 'clsx';
 
-type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
-
+export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
 const sizeClasses: Record<AvatarSize, string> = {
   sm: 'w-8 h-8 text-[10px]',
   md: 'w-8.5 h-8.5 text-xs md:text-sm',
@@ -17,11 +16,13 @@ const Avatar = ({
   name,
   details,
   size = 'md',
+  showText = true,
 }: {
   className?: string;
   name?: string;
   details?: string;
   size?: AvatarSize;
+  showText?: boolean;
 }) => {
   const { color, initials } = getInitials(name || 'N/A');
 
@@ -36,12 +37,14 @@ const Avatar = ({
       >
         {initials || ''}
       </div>
-      <div className="overflow-hidden">
-        <h4 className="capitalize text-start">{name || ' '}</h4>
-        <p className="p14 leading-[1em] lowercase text-start">
-          {details || ' '}
-        </p>
-      </div>
+      {showText && (
+        <div className="overflow-hidden">
+          <h4 className="capitalize text-start line-clamp-1">{name || ' '}</h4>
+          <p className="p14 leading-[1em] lowercase text-start">
+            {details || ' '}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

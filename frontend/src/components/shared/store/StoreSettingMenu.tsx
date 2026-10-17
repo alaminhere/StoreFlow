@@ -45,7 +45,7 @@ const SettingMenu = () => {
 
   return (
     <div className="flex h-full flex-col gap-4 lg:flex-row">
-      {/* Settings Menu */}
+      {/* settings Menu */}
       <Card className="w-full hover:border-border! lg:w-75">
         {MENU_ITEMS.map(item => {
           const Icon = item.icon;
@@ -63,24 +63,24 @@ const SettingMenu = () => {
         })}
       </Card>
 
-      {/* Content */}
+      {/* content */}
       <Card className="w-full hover:bg-card!">
         {isLoading ? (
           <Loading />
         ) : (
           <>
-            {/* Store Profile */}
+            {/* store Profile */}
             {activeTab === 'profile' && <StoreProfile store={store as Store} />}
 
-            {/* Invoice Settings */}
+            {/* invoice Settings */}
             {activeTab === 'invoice-settings' && (
               <InvoiceSetting store={store as Store} />
             )}
 
-            {/* Store Preferences */}
+            {/* store Preferences */}
             {activeTab === 'preferences' && <StorePreferences />}
 
-            {/* Delete Store */}
+            {/* delete Store */}
             {activeTab === 'delete-store' && (
               <StoreDeleteAccount store={store as Store} />
             )}

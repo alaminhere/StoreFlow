@@ -1,7 +1,6 @@
+//import { store } from '@/mocks/store';
+
 import { baseApi } from './baseApi';
-
-import { store } from '@/mocks/store';
-
 import { CreateStore, Store, UpdateStore } from '@/types/store.types';
 
 type ApiResponse = {
@@ -16,18 +15,9 @@ export const storeApi = baseApi.injectEndpoints({
      * fetch current store
      *-----------------------------------------*/
     getStore: build.query<ApiResponse, void>({
-      // query: () => ({
-      //   url: '/store',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: store,
-        },
+      query: () => ({
+        url: '/store',
+        method: 'GET',
       }),
       providesTags: ['store'],
     }),
@@ -41,6 +31,7 @@ export const storeApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['store', 'member', 'permission', 'user'],
     }),
 
     /*-----------------------------------------*
@@ -52,7 +43,6 @@ export const storeApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-
       invalidatesTags: ['store'],
     }),
 
@@ -65,45 +55,45 @@ export const storeApi = baseApi.injectEndpoints({
         method: 'DELETE',
         body: data,
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.resetApiState());
+        } catch {}
+      },
     }),
-
 
     /*-----------------------------------------*
      * open store
      *-----------------------------------------*/
     openStore: build.mutation<ApiResponse, { storeId: string }>({
-      // query: data => ({
-      //   url: '/store/open',
-      //   method: 'POST',
-      //   body: data,
-      // }),
-
-      // invalidatesTags: ['store'],,
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: 'Successfully Open store',
-          success: true,
-        },
+      query: data => ({
+        url: '/store/open',
+        method: 'POST',
+        body: data,
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.resetApiState());
+        } catch {}
+      },
     }),
 
     /*-----------------------------------------*
      * close  store
      *-----------------------------------------*/
     closeStore: build.mutation<ApiResponse, void>({
-      // query: () => ({
-      //   url: '/store/closed',
-      //   method: 'POST',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: 'Successfully LeaveStore',
-          success: true,
-        },
+      query: () => ({
+        url: '/store/closed',
+        method: 'POST',
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.resetApiState());
+        } catch {}
+      },
     }),
   }),
 });

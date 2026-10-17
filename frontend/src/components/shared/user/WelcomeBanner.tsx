@@ -1,20 +1,20 @@
 'use client';
 
 import clsx from 'clsx';
-
 import Card from '@/components/ui/card';
 import Button from '@/components/ui/button';
 import getInitials from '@/helpers/getInitials';
 import { Email, MapPin } from '@/helpers/icon/icon';
 import useCurrentUserContext from '@/hooks/useCurrentUserContext';
+import Link from 'next/link';
+import AddStoreButton from './AddStoreButton';
 
 const WelcomeBanner = () => {
-  const { user } = useCurrentUserContext();
+  const { user, store } = useCurrentUserContext();
   const { initials } = getInitials(user?.name || 'N/A');
 
   return (
-    <Card className=" flex flex-col lg:flex-row items-center justify-between gap-5 ">
-      {/*  */}
+    <Card className=" flex flex-col lg:flex-row items-center justify-between gap-5 bg-primary-fade">
       <div className="flex items-center justify-start gap-4 w-full">
         <div
           className={clsx(
@@ -24,11 +24,9 @@ const WelcomeBanner = () => {
         >
           {initials}
         </div>
-
         <div>
           <p className="p14 text-text">Welcome back</p>
           <h3 className="text-title text-2xl">{user?.name || 'Loading..'}</h3>
-
           <div className="flex flex-wrap items-center gap-4">
             <span className="p14 flex items-center gap-1">
               <Email size={14} />
@@ -43,11 +41,14 @@ const WelcomeBanner = () => {
           </div>
         </div>
       </div>
-
-      {/*   */}
       <div className="flex lg:justify-end items-center gap-3 w-full">
-        <Button variant="secondary">Create Store</Button>
-        <Button> Active Store</Button>
+        {store ? (
+          <Link href={'/dashboard'}>
+            <Button> View Active Store</Button>
+          </Link>
+        ) : (
+          <AddStoreButton className="w-fit!" />
+        )}
       </div>
     </Card>
   );

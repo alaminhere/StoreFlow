@@ -12,6 +12,7 @@ const PLANS = [
     cta: 'Start Free',
     active: true,
     href: '/signin',
+    highlighted: true,
     features: [
       'Up to 100 products',
       '1 warehouse',
@@ -28,7 +29,7 @@ const PLANS = [
     period: '/month',
     cta: 'Start Free Trial',
     active: false,
-    highlighted: true,
+
     href: '/',
     features: [
       'Unlimited products',
@@ -81,9 +82,9 @@ const Pricing = () => {
               <div
                 key={plan.name}
                 className={clsx(
-                  'relative flex flex-col rounded-2xl border p-8 bg-surface',
+                  'relative flex flex-col rounded-2xl border p-8 bg-primary-fade',
                   plan.highlighted
-                    ? 'border-2 border-primary'
+                    ? 'border border-primary'
                     : 'border-border',
                 )}
               >

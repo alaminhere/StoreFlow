@@ -8,7 +8,6 @@ const getStockStatus = (
   if (stock <= minimumStockLevel) return 'Low Stock';
   return 'In Stock';
 };
-
 export default getStockStatus;
 
 export const statusStyles: Record<StockStatus, string> = {

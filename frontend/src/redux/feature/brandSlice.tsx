@@ -1,8 +1,6 @@
 import { baseApi } from './baseApi';
-
-import { brands } from '@/mocks/product';
-
 import { Brand, CreateBrand, UpdateBrand } from '@/types/brand.types';
+//import { brands } from '@/mocks/product';
 
 type BrandResponse = {
   message: string;
@@ -30,10 +28,6 @@ type BrandMutationResponse = {
   data?: Brand;
 };
 
-type DeleteBrandsRequest = {
-  ids: string[];
-};
-
 type DeleteBrandsResponse = {
   message: string;
   success: boolean;
@@ -41,40 +35,23 @@ type DeleteBrandsResponse = {
 
 export const brandApi = baseApi.injectEndpoints({
   endpoints: build => ({
+    /*-----------------------------------------*
+     * fetch brands with pagination and search
+     *-----------------------------------------*/
     allBrand: build.query<BrandResponse, BrandQueryParams>({
-      /*-----------------------------------------*
-       * fetch brands with pagination and search
-       *-----------------------------------------*/
-
-      // query: params => {
-      //   const query = new URLSearchParams();
-
-      //   if (params?.search) {
-      //     query.set('search', params.search);
-      //   }
-
-      //   if (params?.page) {
-      //     query.set('page', params.page.toString());
-      //   }
-
-      //   return {
-      //     url: `/brand?${query.toString().toLocaleLowerCase()}`,
-      //     method: 'GET',
-      //   };
-      // },
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: {
-            brands,
-            totalPage: 4,
-          },
-        },
-      }),
-
+      query: params => {
+        const query = new URLSearchParams();
+        if (params?.search) {
+          query.set('search', params.search);
+        }
+        if (params?.page) {
+          query.set('page', params.page.toString());
+        }
+        return {
+          url: `/brand?${query.toString().toLocaleLowerCase()}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['brand'],
     }),
 
@@ -82,20 +59,11 @@ export const brandApi = baseApi.injectEndpoints({
      * fetch brands without pagination
      *-----------------------------------------*/
     brandList: build.query<BrandListResponse, void>({
-      // query: () => ({
-      //   url: '/brand/list',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: brands,
-        },
+      query: () => ({
+        url: '/brand/list',
+        method: 'GET',
       }),
-      providesTags: ['brand'],
+      providesTags: ['brand'], 
     }),
 
     /*-----------------------------------------*
@@ -107,7 +75,6 @@ export const brandApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-
       invalidatesTags: ['brand'],
     }),
 
@@ -120,20 +87,18 @@ export const brandApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-
-      invalidatesTags: ['brand'],
+      invalidatesTags: ['brand', 'product'],
     }),
 
     /*-----------------------------------------*
      * delete brand
      *-----------------------------------------*/
-    deleteBrands: build.mutation<DeleteBrandsResponse, DeleteBrandsRequest>({
+    deleteBrands: build.mutation<DeleteBrandsResponse, { ids: string[] }>({
       query: data => ({
         url: '/brand',
         method: 'DELETE',
         body: data,
       }),
-
       invalidatesTags: ['brand'],
     }),
   }),

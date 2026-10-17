@@ -1,7 +1,4 @@
 import { baseApi } from './baseApi';
-
-import { suppliers } from '@/mocks/suppliers';
-
 import {
   CreateSupplier,
   Supplier,
@@ -29,7 +26,7 @@ type SupplierQueryParams = {
 
 type Response = {
   message: string;
-  success:boolean
+  success: boolean;
 };
 
 type DeleteSuppliers = {
@@ -43,34 +40,18 @@ export const supplierApi = baseApi.injectEndpoints({
      * and search
      *-----------------------------------------*/
     allSupplier: build.query<SupplierResponse, SupplierQueryParams>({
-      // query: params => {
-      //   const query = new URLSearchParams();
-      //
-      //   if (params?.search) {
-      //     query.set('search', params.search);
-      //   }
-      //
-      //   if (params?.page) {
-      //   }
-      //
-      //   return {
-      //     url: `/supplier?${query.toString()}`,
-      //     method: 'GET',
-      //   };
-      // },
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: {
-            suppliers,
-            totalPage: 5,
-          },
-        },
-      }),
-
+      query: params => {
+        const query = new URLSearchParams();
+        if (params?.search) {
+          query.set('search', params.search);
+        }
+        if (params?.page) {
+        }
+        return {
+          url: `/supplier?${query.toString()}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['supplier'],
     }),
 
@@ -78,20 +59,10 @@ export const supplierApi = baseApi.injectEndpoints({
      * fetch all suppliers without pagination
      *-----------------------------------------*/
     supplierList: build.query<SupplierListResponse, void>({
-      // query: () => ({
-      //   url: '/supplier/list',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: suppliers,
-        },
+      query: () => ({
+        url: '/supplier/list',
+        method: 'GET',
       }),
-
       providesTags: ['supplier'],
     }),
 
@@ -104,7 +75,6 @@ export const supplierApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-
       invalidatesTags: ['supplier'],
     }),
 
@@ -117,8 +87,12 @@ export const supplierApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-
-      invalidatesTags: ['supplier'],
+      invalidatesTags: [
+        'supplier',
+        'productSupplier',
+        'purchase',
+        'payment_purchase',
+      ],
     }),
 
     /*-----------------------------------------*
@@ -130,8 +104,7 @@ export const supplierApi = baseApi.injectEndpoints({
         method: 'DELETE',
         body: data,
       }),
-
-      invalidatesTags: ['supplier'],
+      invalidatesTags: ['supplier', 'productSupplier'],
     }),
   }),
 });

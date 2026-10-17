@@ -1,52 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import Card from '@/components/ui/card';
-import useCurrentUserContext from '@/hooks/useCurrentUserContext';
-
 import { Plus } from '@/helpers/icon/icon';
 import handleAlert from '@/helpers/handleAlert';
 import getApiErrorMessage from '@/helpers/getApiErrorMessage';
 import { useOpenStoreMutation } from '@/redux/feature/storeSlice';
+import useCurrentUserContext from '@/hooks/useCurrentUserContext';
 
 import Loading from '../Loading';
-import PopupModal from '../PopupModal';
-
-import StoreCard from './StoreCard';
 import StoreForm from './StoreForm';
+import StoreCard from './StoreCard';
+import PopupModal from '../PopupModal';
 
 type Props = {
   limit?: number;
   showViewAll?: boolean;
 };
 
-const StoreOverview = ({ limit, showViewAll = false }: Props) => {
+const Overview = ({ limit, showViewAll = false }: Props) => {
   const router = useRouter();
-
-  // WHAT: Manage create store modal
   const [open, setOpen] = useState(false);
-
-  // WHAT: Manage store opening state
   const [opening, setOpening] = useState(false);
-
-  // WHAT: Manage store opening request
   const [openStore, { isLoading }] = useOpenStoreMutation();
-
-  // WHAT: Get current user and stores
   const { user, isLoading: userLoading } = useCurrentUserContext();
 
   const stores = user?.stores ?? [];
   const visibleStores = limit ? stores.slice(0, limit) : stores;
 
-  // WHAT: Open selected store and navigate to dashboard
   const handleOpenStore = async (id: string) => {
     try {
       const res = await openStore({ storeId: id }).unwrap();
       if (!res) return;
-
       handleAlert(res.success, res.message);
       if (res.success) {
         router.push('/dashboard');
@@ -78,7 +66,6 @@ const StoreOverview = ({ limit, showViewAll = false }: Props) => {
         {showViewAll && (
           <div className="mt-5 mb-2 flex items-center justify-between">
             <h4>Your Stores</h4>
-
             <Link
               href="/profile/stores"
               className="flex cursor-pointer items-center gap-1 p14 text-primary"
@@ -121,4 +108,4 @@ const StoreOverview = ({ limit, showViewAll = false }: Props) => {
   );
 };
 
-export default StoreOverview;
+export default Overview;

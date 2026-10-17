@@ -13,7 +13,7 @@ export interface User {
   email: string;
   phone: string;
   address?: string;
-  currentUser?: UserStore | null;
+  currentStore?: UserStore | null;
   stores?: UserStore[];
 }
 export interface UpdateUser {

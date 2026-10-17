@@ -10,7 +10,6 @@ import Breadcrumb from '@/components/shared/Breadcrumb';
 import StorePopupMenu from '@/components/shared/store/StorePopupMenu';
 import ThemeToggle from '@/components/shared/ThemeToggle';
 
-
 const StoreDashboardShell = ({ children }: { children: ReactNode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -33,7 +32,7 @@ const StoreDashboardShell = ({ children }: { children: ReactNode }) => {
         <DashboardHeader>
           <div className="flex items-center">
             <Breadcrumb title="Dashboard" className=" hidden md:flex" />
-            <StorePopupMenu className="md:hidden" />
+            <StorePopupMenu className="md:hidden" showText={false}  size='lg'/>
           </div>
           <div className="flex justify-center items-center gap-2 md:gap-4">
             {/* <SearchBar /> */}

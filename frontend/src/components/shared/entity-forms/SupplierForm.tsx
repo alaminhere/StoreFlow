@@ -98,7 +98,6 @@ const SupplierForm = ({ supplier, open, setOpen }: Props) => {
                 })}
                 error={errors.name}
               />
-
               <Input
                 label="Shop Name *"
                 placeholder="Enter shop name"
@@ -117,7 +116,6 @@ const SupplierForm = ({ supplier, open, setOpen }: Props) => {
                 })}
                 error={errors.phone}
               />
-
               <Input
                 label="Email"
                 placeholder="Enter email address"
@@ -131,7 +129,6 @@ const SupplierForm = ({ supplier, open, setOpen }: Props) => {
                 error={errors.email}
               />
             </div>
-
             {/* Address */}
             <div className="grid grid-cols-1 gap-3">
               <Input
@@ -143,7 +140,6 @@ const SupplierForm = ({ supplier, open, setOpen }: Props) => {
                 error={errors.address}
               />
             </div>
-
             {/* Submit */}
             <Button loading={isLoading} disabled={isLoading} type="submit">
               {isEdit ? 'Update Supplier' : 'Save Supplier'}

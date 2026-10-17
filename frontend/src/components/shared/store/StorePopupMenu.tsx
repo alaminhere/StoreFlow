@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import {
   User,
@@ -7,14 +9,12 @@ import {
   UserCog,
 } from '@/helpers/icon/icon';
 import MenuItem from '../MenuItem';
-import Avatar from '../Avatar';
+import Avatar, { AvatarSize } from '../Avatar';
 import handleAlert from '@/helpers/handleAlert';
-import { useRouter } from 'next/navigation';
 import getApiErrorMessage from '@/helpers/getApiErrorMessage';
-import Link from 'next/link';
 import useCurrentStoreContext from '@/hooks/useCurrentStoreContext';
-import { PermissionAction, PermissionModule } from '@/types/permission.types';
 import { useCloseStoreMutation } from '@/redux/feature/storeSlice';
+import { PermissionAction, PermissionModule } from '@/types/permission.types';
 
 const menuItem = [
   {
@@ -25,7 +25,7 @@ const menuItem = [
   {
     icon: UserCog,
     label: 'Member & Roles',
-    href: '/dashboard/users',
+    href: 'dashboard/roles',
     permission: ['MEMBER_ROLES', 'view'],
   },
   {
@@ -36,7 +36,15 @@ const menuItem = [
   },
 ];
 
-const StorePopupMenu = ({ className }: { className?: string }) => {
+const StorePopupMenu = ({
+  className,
+  showText,
+  size = 'md',
+}: {
+  className?: string;
+  showText?: boolean;
+  size?: AvatarSize;
+}) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -71,28 +79,31 @@ const StorePopupMenu = ({ className }: { className?: string }) => {
     <div ref={menuRef} className="relative inline-block">
       <button
         onClick={() => setOpen(prev => !prev)}
-        className={`flex items-center gap-2 cursor-pointer ${className}`}
+        className={`flex items-center gap-2 cursor-pointer w-full max-w-40 overflow-hidden ${className}`}
       >
         <Avatar
           name={currentMember?.name || 'Load...'}
           details={currentMember?.role || 'Load...'}
+          showText={showText}
+          size={size}
         />
-
         <ChevronDown
           size={16}
-          className={`transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'
-            }`}
+          className={`transition-transform duration-200 ${
+            open ? 'rotate-180' : 'rotate-0'
+          }`}
         />
       </button>
       {open && (
-        <div className="absolute left-0 md:left-auto md:right-0 mt-3 w-66 bg-surface rounded-xl shadow-lg z-50">
+        <div className="absolute left-0 md:left-auto md:right-0 mt-3 w-50 bg-surface rounded-xl shadow-lg z-50">
           <div className=" px-3 py-2.5 border-b border-border">
-            <h4 className="capitalize "> {currentMember?.name || ''}</h4>
-            <p className="p14 leading-[1em] lowercase text-start">
+            <h4 className="capitalize line-clamp-1">
+              {currentMember?.name || ''}
+            </h4>
+            <p className="p14 leading-[1em] lowercase text-start line-clamp-1">
               {currentMember?.email || ' '}
             </p>
           </div>
-
           {menuItem.map((item, index) => {
             if (
               item.permission &&
@@ -103,18 +114,16 @@ const StorePopupMenu = ({ className }: { className?: string }) => {
             ) {
               return null;
             }
-
             return (
               <Link key={index} href={item.href}>
                 <MenuItem
                   icon={<item.icon size={16} />}
                   label={item.label}
-                  className="py-2.5! text-sm! rounded-none!"
+                  className="mt-1.5 text-sm! rounded-none!"
                 />
               </Link>
             );
           })}
-
           <div className="border-t border-border">
             <MenuItem
               onClick={onSignOut}

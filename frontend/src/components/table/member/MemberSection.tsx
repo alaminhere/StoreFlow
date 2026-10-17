@@ -12,10 +12,15 @@ import { Settings, UserCog } from '@/helpers/icon/icon';
 import getApiErrorMessage from '@/helpers/getApiErrorMessage';
 
 import BulkActionBar from '../BulkActionBar';
-import MemberTable from './MemberTable'; 
+import MemberTable from './MemberTable';
 import { StoreMember } from '@/types/store.types';
 import MemberForm from '@/components/shared/entity-forms/MemberForm';
-import { useAllStoreMemberQuery, useDeleteStoreMemberMutation } from '@/redux/feature/memberSlice';
+import {
+  useAllStoreMemberQuery,
+  useDeleteStoreMemberMutation,
+} from '@/redux/feature/memberSlice';
+import { useSearchParams } from 'next/navigation';
+import Pagination from '../Pagination';
 
 type TabKey = 'member' | 'roles';
 
@@ -25,10 +30,17 @@ const TABS = [
 ] as const;
 
 const MemberSection = () => {
-  const [deleteStoreMember] = useDeleteStoreMemberMutation();
-  const { data: memberData } = useAllStoreMemberQuery()
-  const MEMBER = memberData?.data ?? [];
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get('page')) || 1;
+  const search = searchParams.get('search') || '';
+  const [deleteStoreMember] = useDeleteStoreMemberMutation({});
 
+  const { data: memberData, isLoading } = useAllStoreMemberQuery({
+    page,
+    search,
+  });
+  const MEMBER = memberData?.data.members ?? [];
+  const TOTAL_PAGE = memberData?.data.totalPage ?? 1;
   const [isEditFormOpen, setIsEditFormOpen] = useState<boolean>(false);
   const [selectedForEdit, setSelectedForEdit] = useState<StoreMember | null>(
     null,
@@ -36,7 +48,6 @@ const MemberSection = () => {
 
   // manage member selection for bulk actions
   const [selected, setSelected] = useState<string[]>([]);
-
   const allChecked = MEMBER.length > 0 && selected.length === MEMBER.length;
 
   const toggleAll = () => {
@@ -103,7 +114,7 @@ const MemberSection = () => {
 
       {/* Search */}
       <Card className="my-5 flex flex-col gap-2 hover:border-border! md:gap-5 xl:flex-row">
-        <SearchInput placeholder="Search Name" />
+        <SearchInput placeholder="search member name" />
       </Card>
 
       {/* Members */}
@@ -131,6 +142,8 @@ const MemberSection = () => {
             setIsEditFormOpen={setIsEditFormOpen}
             setSelectedForEdit={setSelectedForEdit}
           />
+
+          {!isLoading && <Pagination total={TOTAL_PAGE} />}
         </div>
       )}
 

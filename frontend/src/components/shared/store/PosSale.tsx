@@ -30,6 +30,7 @@ import { CreateSales, CreateSalesItem, Sales } from '@/types/sales.type';
 
 import formatPrice from '@/helpers/formatPrice';
 import SaleInvoice from '../entity-forms/SaleInvoice';
+import AddCustomerButton from '../entity-forms/AddCustomerButton';
 
 const PAYMENT_METHODS: PaymentMethod[] = [
   'BANK_TRANSFER',
@@ -68,12 +69,11 @@ const PosSales = () => {
   };
 
   // fetch customers, products, and create sale mutation
-
   const { data: customerData } = useCustomerListQuery();
   const { data: productData, isLoading } = useAllProductQuery(query);
   const [createSale, { isLoading: saleLoading }] = useCreateSaleMutation();
 
-  const PRODUCTS = productData?.data.Products ?? [];
+  const PRODUCTS = productData?.data.products ?? [];
   const customers = customerData?.data ?? [];
 
   // manage POS sale form and validation
@@ -107,19 +107,16 @@ const PosSales = () => {
           handleAlert(false, `Only ${exists.stock} in stock`);
           return prev;
         }
-
         return prev.map(item =>
           item.productId === data.id
             ? {
-              ...item,
-              quantity: item.quantity + 1,
-              total: (item.quantity + 1) * item.price
-
-            }
+                ...item,
+                quantity: item.quantity + 1,
+                total: (item.quantity + 1) * item.price,
+              }
             : item,
         );
       }
-
       return [
         ...prev,
         {
@@ -143,15 +140,14 @@ const PosSales = () => {
       handleAlert(false, `Only ${exists.stock} in stock`);
       return;
     }
-
     setItems(prev =>
       prev.map(item =>
         item.productId === productId
           ? {
-            ...item,
-            quantity: next,
-            total: next * item.price,
-          }
+              ...item,
+              quantity: next,
+              total: next * item.price,
+            }
           : item,
       ),
     );
@@ -160,11 +156,9 @@ const PosSales = () => {
   const removeItem = (productId: string) => {
     setItems(prev => prev.filter(item => item.productId !== productId));
   };
-
   const clearCart = () => {
     setItems([]);
   };
-
   // calculate subtotal, discount, total, paid, and due
   const subtotal = useMemo(
     () => items.reduce((total, item) => total + item.quantity * item.price, 0),
@@ -182,7 +176,6 @@ const PosSales = () => {
       handleAlert(false, 'Please select a customer');
       return;
     }
-
     if (items.length === 0) {
       handleAlert(false, 'Please select products');
       return;
@@ -222,71 +215,76 @@ const PosSales = () => {
       <section className="flex h-[calc(100vh-4.5rem)] gap-4 p-5">
         {/* Left */}
         <div className="flex min-w-0 flex-1 flex-col gap-4">
+          {' '}
           {/* Search + Filter */}
           <Card className="hover:border-border! flex shrink-0 flex-col gap-2 md:gap-5 xl:flex-row">
             <SearchInput />
-
             <ProductsFilter />
           </Card>
-
-          {/* Product Area */}
+          {/* product Area */}
           <div className="min-h-0 flex-1 overflow-y-auto scrollbar-none">
             {isLoading ? (
               <Loading />
             ) : PRODUCTS.length === 0 ? (
               <p>Product Not Found</p>
             ) : (
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-1 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-1 xl:grid-cols-3">
                 {PRODUCTS.map(item => {
                   const outOfStock = Number(item.stock) === 0;
-                  const isSelected = items.find(i => i.productId === item.id);
+                  const selectedItem = items.find(i => i.productId === item.id);
+                  const isSelected = !!selectedItem;
 
                   return (
                     <div
                       key={item.id}
-                      onClick={() => handleAdd(item)}
+                      onClick={() => !outOfStock && handleAdd(item)}
                       className={clsx(
+                        'relative flex items-center gap-3 rounded-xl border p-2 transition bg-primary-fade',
                         outOfStock
-                          ? styles.productCardOutOfStock
-                          : styles.productCard,
-                        isSelected && 'border-primary',
+                          ? 'cursor-not-allowed opacity-60'
+                          : 'cursor-pointer hover:border-primary active:scale-[0.98]',
+                        isSelected
+                          ? 'border-2 border-primary'
+                          : 'border-border',
                       )}
                     >
-                      {/* Product Image */}
-                      <div className="relative aspect-4/3 w-full overflow-hidden">
+                      <div className="relative size-14 shrink-0 overflow-hidden rounded-lg">
                         <Image
                           src={item.image.url}
                           alt={item.name}
                           fill
-                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                          sizes="56px"
                           className={clsx(
                             'object-cover',
                             outOfStock && 'grayscale',
                           )}
                         />
                       </div>
-
-                      {/* Product Info */}
-                      <div className="p-3">
-                        <p className="p12">
+                      <div className="min-w-0 flex-1">
+                        <h4>{item.name}</h4>
+                        <p className="line-clamp-1 p12">
                           {item.category.name} • {item.brand.name}
                         </p>
-
-                        <p className="line-clamp-1 text-text">{item.name}</p>
-
-                        <div className="mt-4 flex items-center justify-between gap-3">
-                          <span className="text-base font-semibold text-primary">
-                            ৳ {item.sellingPrice}
+                        <div className="mt-0.5 flex items-center gap-2">
+                          <span className="text-sm font-semibold text-primary">
+                            {formatPrice(item.sellingPrice)}
                           </span>
-
-                          <span className="p12">{item.stock} in stock</span>
+                          {!outOfStock && (
+                            <span className="p12">• {item.stock} in stock</span>
+                          )}
                         </div>
                       </div>
-
-                      {/* Out Of Stock */}
-                      {outOfStock && (
-                        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-danger bg-danger-bg px-2 py-1 p12 text-danger">
+                      {outOfStock ? (
+                        <span className="shrink-0 rounded-full border border-danger bg-danger-bg px-2 py-0.5 p12 text-danger">
                           Out of stock
+                        </span>
+                      ) : isSelected ? (
+                        <span className="flex h-7 min-w-7 shrink-0 items-center justify-center rounded-lg bg-primary px-1.5 text-sm font-medium text-text">
+                          {selectedItem.quantity}
+                        </span>
+                      ) : (
+                        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-warning-bg text-lg leading-none text-primary">
+                          +
                         </span>
                       )}
                     </div>
@@ -297,7 +295,7 @@ const PosSales = () => {
           </div>
         </div>
 
-        {/* Right: Cart */}
+        {/*  right cart */}
         <aside className="flex w-96 shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-surface">
           <form
             onSubmit={handleSubmit(onSubmit)}
@@ -308,10 +306,7 @@ const PosSales = () => {
               <div className="flex items-center justify-between gap-3 border-b border-border p-4">
                 <h4>Cart {items.length}</h4>
 
-                <button type="button" className="cursor-pointer text-sm">
-                  Create customer
-                </button>
-
+                <AddCustomerButton className="p-0! bg-transparent! text-primary" />
                 <button
                   type="button"
                   onClick={clearCart}
@@ -320,8 +315,7 @@ const PosSales = () => {
                   Clear All
                 </button>
               </div>
-
-              {/* Customer */}
+              {/*customer */}
               <div className="p-4">
                 <Select
                   placeholder="Select customer"
@@ -347,7 +341,7 @@ const PosSales = () => {
               </div>
             </div>
 
-            {/* Cart Items */}
+            {/*c art items */}
             <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-accent-bg px-4">
               <ul className="flex flex-col gap-2">
                 {items.length === 0 ? (
@@ -359,7 +353,7 @@ const PosSales = () => {
                 ) : (
                   items.map(item => (
                     <li key={item.productId} className={styles.cartItem}>
-                      {/* Item Header */}
+                      {/* item Header */}
                       <div className="flex items-start justify-between gap-2">
                         <p className="p14 truncate text-text">
                           {item.productName}
@@ -374,8 +368,7 @@ const PosSales = () => {
                           <X size={14} className="text-danger!" />
                         </button>
                       </div>
-
-                      {/* Quantity + Price */}
+                      {/* quantity price */}
                       <div className="mt-2 flex items-center justify-between">
                         <div className={styles.qtyBtnWrap}>
                           <button
@@ -387,11 +380,9 @@ const PosSales = () => {
                           >
                             <Minus size={14} />
                           </button>
-
                           <span className="p14 w-6 text-center text-text">
                             {item.quantity}
                           </span>
-
                           <button
                             type="button"
                             onClick={() => changeQuantity(item.productId, +1)}
@@ -402,7 +393,6 @@ const PosSales = () => {
                             <Plus size={14} />
                           </button>
                         </div>
-
                         <span className="font-medium text-text">
                           {formatPrice(item.price * item.quantity)}
                         </span>
@@ -412,20 +402,16 @@ const PosSales = () => {
                 )}
               </ul>
             </div>
-
-            {/* Footer / Summary */}
+            {/* footer / summary */}
             <div className="mt-3 ml-auto w-full px-4 pb-4">
               {/* Subtotal */}
               <div className={styles.summaryRow}>
                 <span>Subtotal</span>
-
                 <span>{formatPrice(subtotal)}</span>
               </div>
-
-              {/* Discount */}
+              {/* discount */}
               <div className={styles.summaryRow}>
                 <span className="w-1/2">Discount %</span>
-
                 <Input
                   type="number"
                   min={0}
@@ -436,18 +422,14 @@ const PosSales = () => {
                   className="w-1/2 text-right p12 px-2! py-1!"
                 />
               </div>
-
-              {/* Total */}
+              {/* total */}
               <div className={clsx('text-sm text-success!', styles.summaryRow)}>
                 <span>Total</span>
-
                 <span>{formatPrice(total)}</span>
               </div>
-
               {/* paid */}
               <div className={styles.summaryRow}>
                 <span className="w-1/2">paid</span>
-
                 <Input
                   type="number"
                   min={0}
@@ -458,15 +440,13 @@ const PosSales = () => {
                   className="w-1/2 text-right p12 px-2! py-1!"
                 />
               </div>
-
               <div
                 className={clsx('text-warning! border-none', styles.summaryRow)}
               >
                 <span className="">Due</span>
                 <span>{formatPrice(due)}</span>
               </div>
-
-              {/* Payment Method */}
+              {/* payment method */}
               <Select
                 placeholder="Select payment method"
                 {...register('paymentMethod', {
@@ -479,7 +459,6 @@ const PosSales = () => {
                   </option>
                 ))}
               </Select>
-
               <Button
                 type="submit"
                 disabled={saleLoading}
@@ -492,7 +471,6 @@ const PosSales = () => {
           </form>
         </aside>
       </section>
-
       <SaleInvoice
         invoice={invoice}
         open={invoiceOpen}

@@ -41,7 +41,7 @@ const Testimonials = () => {
         </div>
         <div className="mt-8 grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 gap-5">
           {TESTIMONIALS.map(item => (
-            <Card key={item.name}>
+            <Card key={item.name} className="bg-primary-fade">
               <span className="flex items-center gap-2 mb-3">
                 {RatingGenerator(item.rating)}
               </span>

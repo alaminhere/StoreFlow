@@ -23,8 +23,7 @@ const InvoiceSetting = ({ store }: { store: Store }) => {
 
     const payload = {
       invoiceFooterNote,
-    };
-    console.log(payload);
+    }; 
     try {
       const res = await updateStore(payload).unwrap();
       if (!res) return;

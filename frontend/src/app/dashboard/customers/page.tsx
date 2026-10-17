@@ -8,25 +8,23 @@ import Loading from '@/components/shared/Loading';
 
 const page = () => {
   return (
-    <>
-      <section className="p-5">
-        <div className="flex flex-wrap justify-between items-center gap-2.5">
-          <SectionBar
-            title="Customers"
-            description="Manage customers and their purchase history."
-          />
-          <AddCustomerButton />
-        </div>
-        <Card className="hover:border-border! flex flex-col xl:flex-row gap-2 md:gap-5 my-5">
-          <Suspense fallback={<Loading />}>
-            <SearchInput placeholder="Search customer name" />
-          </Suspense>
-        </Card>
+    <section className="p-5">
+      <div className="flex flex-wrap justify-between items-center gap-2.5">
+        <SectionBar
+          title="Customers"
+          description="Manage customers and their purchase history."
+        />
+        <AddCustomerButton />
+      </div>
+      <Card className="hover:border-border! flex flex-col xl:flex-row gap-2 md:gap-5 my-5">
         <Suspense fallback={<Loading />}>
-          <CustomerSection />
+          <SearchInput placeholder="search customer name" />
         </Suspense>
-      </section>
-    </>
+      </Card>
+      <Suspense fallback={<Loading />}>
+        <CustomerSection />
+      </Suspense>
+    </section>
   );
 };
 

@@ -58,11 +58,8 @@ const UserMenu = () => {
   const onSignOut = async () => {
     try {
       const res = await signOut().unwrap();
-
       if (!res) return;
-
       handleAlert(res.success, res.message);
-
       if (res.success) {
         router.push('/signin');
       }
@@ -83,14 +80,13 @@ const UserMenu = () => {
 
               {menu?.items?.map((item, index) => {
                 const Icon = item.icon;
-
                 return (
                   <Link href={item.href} key={index}>
                     <MenuItem
                       active={pathname === item.href}
                       icon={<Icon size={14} />}
                       label={item.name}
-                      className="rounded-md text-base! py-1.5!"
+                      className="rounded-md text-base! mt-1!"
                     />
                   </Link>
                 );
@@ -98,7 +94,6 @@ const UserMenu = () => {
             </div>
           );
         })}
-
         <AddStoreButton />
       </div>
       <Button

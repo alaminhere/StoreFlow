@@ -68,26 +68,20 @@ const MovementsAction = () => {
       handleAlert(false, 'Please select a product.');
       return;
     }
-
     if (!quantity || quantity <= 0) {
       handleAlert(false, 'Please enter a valid quantity.');
       return;
     }
-
     if (!reason?.trim()) {
       handleAlert(false, 'Please enter a reason.');
       return;
     }
-
     const payload = {
       productId: selectedProduct.id,
       quantity,
       type: movementType,
       reason: reason.trim(),
     };
-
-    console.log(payload);
-
     try {
       const res = await createStockMovement(payload).unwrap();
       if (res.success) {

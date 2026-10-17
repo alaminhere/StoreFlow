@@ -3,14 +3,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Brand, CreateBrand } from '@/types/brand.types';
-
 import PopupModal from '../PopupModal';
-
 import Input from '@/components/ui/input';
 import Button from '@/components/ui/button';
 
 import handleAlert from '@/helpers/handleAlert';
+import { Brand, CreateBrand } from '@/types/brand.types';
 import getApiErrorMessage from '@/helpers/getApiErrorMessage';
 
 import {

@@ -47,7 +47,6 @@ const CategorySection = () => {
   const toggleAll = () => {
     setSelected(allChecked ? [] : CATEGORIES.map(category => category.id));
   };
-
   const toggleOne = (id: string) => {
     setSelected(prev =>
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id],
@@ -77,13 +76,11 @@ const CategorySection = () => {
         onClear={clearSelection}
         onDelete={handleBulkDelete}
       />
-
       <CategoryForm
         categories={selectedCategoryForEdit}
         open={isEditFormOpen}
         setOpen={setIsEditFormOpen}
       />
-
       <CategoryTable
         brand={CATEGORIES}
         allChecked={allChecked}
@@ -94,7 +91,6 @@ const CategorySection = () => {
         setIsEditFormOpen={setIsEditFormOpen}
         setSelectedCategoryForEdit={setSelectedCategoryForEdit}
       />
-
       {!isLoading && <Pagination total={totalPage} />}
     </div>
   );

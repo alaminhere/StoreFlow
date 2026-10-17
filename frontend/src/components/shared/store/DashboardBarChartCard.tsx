@@ -47,7 +47,6 @@ const TONES = {
 } as const;
 
 const TONE_ORDER: Tone[] = ['accent', 'success', 'warning', 'info', 'danger'];
-
 const readVar = (name: string, fallback: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
   fallback;

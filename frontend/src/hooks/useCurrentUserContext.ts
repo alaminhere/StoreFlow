@@ -11,11 +11,13 @@ const useCurrentUserContext = () => {
     data: storeData,
     isLoading: storeLoading,
     isError: storeError,
-  } = useGetStoreQuery();
+  } = useGetStoreQuery(undefined, {
+    skip: !userData?.data,
+  });
 
   const user = userData?.data;
   const store = storeData?.data;
-  const role = user?.currentUser!.role || 'SALESMAN';
+  const role = user?.currentStore?.role ?? 'SALESMAN';
 
   return {
     store: store,

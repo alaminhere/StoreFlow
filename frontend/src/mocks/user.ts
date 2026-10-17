@@ -6,7 +6,7 @@ export const user: User = {
   email: 'alamin@example.com',
   phone: '017XXXXXXXX',
   address: '',
-  currentUser: {
+  currentStore: {
     id: 'store-002',
     name: 'Alamin Electronics',
     email: 'store@example.com',

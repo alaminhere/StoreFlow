@@ -98,8 +98,7 @@ const StoreProfile = ({ store }: { store: Store }) => {
         url: prevUrls?.url ?? '',
         public_id: prevUrls?.public_id ?? '',
       },
-    };
-    console.log(payload);
+    }; 
     try {
       const res = await updateStore(payload).unwrap();
       if (!res) return;
@@ -128,7 +127,6 @@ const StoreProfile = ({ store }: { store: Store }) => {
                 height={50}
                 className="h-full w-full object-cover"
               />
-
               {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/70">
                   <Loader size={20} className="animate-spin text-text" />
@@ -144,7 +142,6 @@ const StoreProfile = ({ store }: { store: Store }) => {
               </button>
             </div>
           )}
-
           <label
             htmlFor="file"
             className={`flex aspect-square cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-border ${prevUrls ? 'hidden' : ''}`}
@@ -155,7 +152,6 @@ const StoreProfile = ({ store }: { store: Store }) => {
               <Plus className="text-muted-foreground" size={18} />
             )}
           </label>
-
           <input
             onChange={uploadImage}
             type="file"
@@ -174,7 +170,6 @@ const StoreProfile = ({ store }: { store: Store }) => {
             defaultValue={store?.name || ''}
             placeholder="Hafu Traders"
           />
-
           <Input
             name="tagline"
             label="Tagline"
@@ -191,7 +186,6 @@ const StoreProfile = ({ store }: { store: Store }) => {
             defaultValue={store?.email || ''}
             placeholder="hello@novatraders.com"
           />
-
           <Input
             label="Phone"
             type="tel"
@@ -200,7 +194,6 @@ const StoreProfile = ({ store }: { store: Store }) => {
             placeholder="+880 1711-123456"
           />
         </div>
-
         <Textarea
           label="Address"
           name="address"

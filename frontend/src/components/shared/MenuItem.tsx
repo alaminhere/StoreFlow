@@ -31,7 +31,7 @@ const MenuItem = ({
     <button
       onClick={onClick}
       className={clsx(
-        'group flex items-center w-full  rounded-md text-base! py-1.5! gap-3 px-3 ',
+        'group flex items-center w-full  rounded-md text-base py-1 gap-2 px-3',
         'transition-colors duration-150 cursor-pointer',
         active
           ? 'bg-sidebar-active-bg! text-primary!'

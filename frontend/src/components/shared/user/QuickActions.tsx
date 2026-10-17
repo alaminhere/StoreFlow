@@ -48,7 +48,7 @@ const QuickActions = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 ">
       {quickActions.map(action => (
         <Link key={action.title} href={action.href}>
-          <Card className="flex items-center justify-between gap-4">
+          <Card className="flex items-center justify-between gap-4 bg-primary-fade">
             <div className="flex items-center gap-3">
               <div>
                 <action.icon
@@ -60,7 +60,6 @@ const QuickActions = () => {
                   )}
                 />
               </div>
-
               <div>
                 <h4>{action.title}</h4>
                 <p className="p14">{action.description}</p>
@@ -71,7 +70,6 @@ const QuickActions = () => {
           </Card>
         </Link>
       ))}
-
       <Card
         onClick={() => setOpen(!open)}
         className="flex items-center justify-between gap-4 cursor-pointer"
@@ -86,16 +84,13 @@ const QuickActions = () => {
               )}
             />
           </div>
-
           <div>
             <h4>Create New Store</h4>
             <p className="p14">Set up a new store workspace</p>
           </div>
         </div>
-
         <ArrowLeftRight size={18} className=" text-info!" />
       </Card>
-
       <StoreForm open={open} setOpen={setOpen} />
     </div>
   );

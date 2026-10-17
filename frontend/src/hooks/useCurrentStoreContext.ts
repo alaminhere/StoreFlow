@@ -1,4 +1,4 @@
-import { usePermissionsQuery } from '@/redux/feature/permissionSlice';
+import { getPermissionsByRole } from '@/config/permissionConfig';
 import { useGetStoreQuery } from '@/redux/feature/storeSlice';
 
 import { PermissionAction, PermissionModule } from '@/types/permission.types';
@@ -14,9 +14,7 @@ const useCurrentStoreContext = () => {
   const currentMember = storeData?.data?.currentMember;
   const role = currentMember?.role ?? 'SALESMAN';
 
-  const { data: permissionData, isLoading: permissionLoading } =
-    usePermissionsQuery(role);
-  const permissions = permissionData?.data?.permissions ?? {};
+  const { permissions } = getPermissionsByRole(role);
   const can = (module: PermissionModule, action: PermissionAction): boolean => {
     return permissions[module]?.[action] === true;
   };
@@ -27,7 +25,7 @@ const useCurrentStoreContext = () => {
     permissions,
     can,
     error: storeError,
-    isLoading: storeLoading || permissionLoading,
+    isLoading: storeLoading,
   };
 };
 

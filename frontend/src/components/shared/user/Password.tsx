@@ -42,9 +42,7 @@ const UserPassword = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <h4>Password</h4>
-
       <p className="p13">Update your password to keep your account secure.</p>
-
       <div className="mt-5 space-y-3 border-t border-border pt-4">
         <div className="relative w-full">
           <Input

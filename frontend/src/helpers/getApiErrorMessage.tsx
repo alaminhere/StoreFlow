@@ -11,23 +11,18 @@ const getApiErrorMessage = (error: unknown): string => {
   const err = error as FetchBaseQueryError & {
     data?: ApiErrorData;
   };
-  // Backend
   if (err.data?.message) {
     return err.data.message;
   }
-  // Network error
   if (err.status === 'FETCH_ERROR') {
     return 'Please check your internet connection.';
   }
-  // Timeout
   if (err.status === 'TIMEOUT_ERROR') {
     return 'Request timed out. Please try again.';
   }
-  // Parsing error
   if (err.status === 'PARSING_ERROR') {
     return 'Something went wrong while processing the response.';
   }
-  // Other error
   if ('message' in err && typeof err.message === 'string') {
     return err.message;
   }

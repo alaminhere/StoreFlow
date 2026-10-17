@@ -1,7 +1,4 @@
-import { baseApi } from './baseApi';
-
-import { customers } from '@/mocks/customer';
-
+import { baseApi } from './baseApi'; 
 import {
   CreateCustomer,
   Customer,
@@ -44,35 +41,19 @@ export const customerApi = baseApi.injectEndpoints({
      * fetch all customer with pagination and search
      *-----------------------------------------*/
     allCustomer: build.query<CustomerResponse, CustomerQueryParams>({
-      // query: params => {
-      //   const query = new URLSearchParams();
-      //
-      //   if (params?.search) {
-      //     query.set('search', params.search);
-      //   }
-      //
-      //   if (params?.page) {
-      //     query.set('page', params.page.toString());
-      //   }
-      //
-      //   return {
-      //     url: `/customer?${query.toString()}`,
-      //     method: 'GET',
-      //   };
-      // },
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: {
-            customers,
-            totalPage: 4,
-          },
-        },
-      }),
-
+      query: params => {
+        const query = new URLSearchParams();
+        if (params?.search) {
+          query.set('search', params.search);
+        }
+        if (params?.page) {
+          query.set('page', params.page.toString());
+        }
+        return {
+          url: `/customer?${query.toString()}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['customer'],
     }),
 
@@ -80,20 +61,10 @@ export const customerApi = baseApi.injectEndpoints({
      * fetch all customers without pagination
      *-----------------------------------------*/
     customerList: build.query<CustomerListResponse, void>({
-      // query: () => ({
-      //   url: '/customer/list',
-      //   method: 'GET',
-      // }),
-
-      // Mock: Keep for frontend development
-      queryFn: async () => ({
-        data: {
-          message: '',
-          success: true,
-          data: customers,
-        },
+      query: () => ({
+        url: '/customer/list',
+        method: 'GET',
       }),
-
       providesTags: ['customer'],
     }),
 
@@ -106,7 +77,6 @@ export const customerApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-
       invalidatesTags: ['customer'],
     }),
 
@@ -119,8 +89,7 @@ export const customerApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-
-      invalidatesTags: ['customer'],
+      invalidatesTags: ['customer', 'sale', 'payment_sale'],
     }),
 
     /*-----------------------------------------*
@@ -132,7 +101,6 @@ export const customerApi = baseApi.injectEndpoints({
         method: 'DELETE',
         body: data,
       }),
-
       invalidatesTags: ['customer'],
     }),
   }),

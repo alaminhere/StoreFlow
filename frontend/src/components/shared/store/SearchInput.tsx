@@ -38,7 +38,7 @@ const SearchInput = ({ placeholder }: { placeholder?: string }) => {
         value={search || ''}
         onChange={e => setSearch(e.target.value)}
         type="search"
-        placeholder={placeholder || 'Search products or Barcode'}
+        placeholder={placeholder || 'search products name or barcode'}
         className="w-full pl-10"
       />
     </div>

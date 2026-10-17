@@ -2,17 +2,13 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-
 import SaleTable from './SaleTable';
 import Pagination from '../Pagination';
 import SaleDetailsPanel from './SaleDetailsPanel';
-
 import { useAllSaleQuery } from '@/redux/feature/SaleSlice';
-import { Sales } from '@/types/sales.type';
 
 const SaleSection = () => {
   const searchParams = useSearchParams();
-
   const page = Number(searchParams.get('page') || '1');
   const search = searchParams.get('search') || '';
 
@@ -23,20 +19,14 @@ const SaleSection = () => {
 
   const SALES = saleData?.data.sales ?? [];
   const TOTAL_PAGE = saleData?.data.totalPage ?? 0;
-
-  // manage selected sale for details panel
-  const [selectedForDetails, setSelectedForDetails] = useState<Sales | null>(
-    null,
-  );
+  const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
+  const selectedSale = SALES.find(p => p.id === selectedSaleId) ?? null;
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-surface">
-      <SaleTable Sales={SALES} setSelectedForDetails={setSelectedForDetails} />
+      <SaleTable Sales={SALES} setSelectedSaleId={setSelectedSaleId} />
 
-      <SaleDetailsPanel
-        setSales={setSelectedForDetails}
-        sales={selectedForDetails}
-      />
+      <SaleDetailsPanel setSales={setSelectedSaleId} sales={selectedSale} />
       {!isLoading && <Pagination total={TOTAL_PAGE} />}
     </div>
   );

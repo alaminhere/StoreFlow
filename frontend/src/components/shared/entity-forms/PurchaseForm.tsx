@@ -53,7 +53,7 @@ type PurchaseItemData = {
   productName: string;
   quantity: number;
   price: number;
-  total: number
+  total: number;
 };
 
 const PurchaseForm = ({ open, setOpen }: Props) => {
@@ -71,7 +71,7 @@ const PurchaseForm = ({ open, setOpen }: Props) => {
     productName: '',
     quantity: 1,
     price: 0,
-    total: 0
+    total: 0,
   });
 
   const [items, setItems] = useState<PurchaseItemData[]>([emptyItem()]);
@@ -114,13 +114,13 @@ const PurchaseForm = ({ open, setOpen }: Props) => {
       prev.map(item =>
         item.id === itemId
           ? {
-            ...item,
-            productId,
-            productName: product?.name ?? '',
-            quantity: 1,
-            price: product?.price ?? 0,
-            total: quantity * price,
-          }
+              ...item,
+              productId,
+              productName: product?.name ?? '',
+              quantity: 1,
+              price: product?.price ?? 0,
+              total: quantity * price,
+            }
           : item,
       ),
     );
@@ -229,12 +229,7 @@ const PurchaseForm = ({ open, setOpen }: Props) => {
                   </option>
                 ))}
               </Select>
-              <Input
-                label="Due Date"
-                type="date"
-                {...register('dueDate', { required: 'Due date is required' })}
-                error={errors.dueDate}
-              />
+              <Input label="Due Date" type="date" />
             </div>
 
             {/* Products Header */}
