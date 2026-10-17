@@ -14,6 +14,6 @@ userRoutes.get('/me', authentication, getCurrentUser);
 userRoutes.get('/email', authentication, userByEmail);
 userRoutes.patch('/me/profile', authentication, updateMyProfile);
 userRoutes.patch('/me/password', authentication, updateMyPassword);
-userRoutes.post('/me/delete', authentication, deleteMyAccount);
+userRoutes.delete('/me/delete', authentication, deleteMyAccount);
 
 export default userRoutes;

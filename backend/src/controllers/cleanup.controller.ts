@@ -7,35 +7,25 @@ import type { NextFunction, Request, Response } from 'express';
  * temp signup records and password reset
  * records whose otp has already expired
  *-----------------------------------------*/
-export const cleanupExpiredTempData = async (
+export const cleanupAndHealth = async (
   _req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
+    await prisma.$queryRaw`SELECT 1`;
     const now = new Date();
     await prisma.tempUser.deleteMany({
-      where: {
-        otpExpiresAt: {
-          lt: now,
-        },
-      },
+      where: { otpExpiresAt: { lt: now } },
     });
-
     await prisma.tempForgotPassData.deleteMany({
-      where: {
-        otpExpiresAt: {
-          lt: now,
-        },
-      },
+      where: { otpExpiresAt: { lt: now } },
     });
 
-    return sendResponse(
-      res,
-      200,
-      true,
-      'Expired temporary data cleaned successfully',
-    );
+    res.status(200).json({
+      status: 'ok',
+      message: 'Health check passed & cleanup done',
+    });
   } catch (err) {
     next(err);
   }
