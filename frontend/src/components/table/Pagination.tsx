@@ -39,7 +39,7 @@ const Pagination = ({ total, queryName = 'page' }: Props) => {
 
   return (
     <div className="flex items-center justify-end md:justify-between px-5 py-4">
-      <span className="p14 hidden md:block">Showing 1-{total}</span>
+      <span className="p14 hidden md:block"> </span>
       <ul className="flex justify-center gap-2">
         <li>
           <button

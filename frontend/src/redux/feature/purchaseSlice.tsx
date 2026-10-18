@@ -78,6 +78,8 @@ export const purchaseApi = baseApi.injectEndpoints({
         'inventory',
         'dashboard',
         'analytics',
+        'supplier',
+        'payment_purchase',
       ],
     }),
 

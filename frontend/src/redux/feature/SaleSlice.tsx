@@ -72,6 +72,8 @@ export const saleApi = baseApi.injectEndpoints({
         'inventory',
         'dashboard',
         'analytics',
+        'customer',
+        'payment_sale'
       ],
     }),
   }),

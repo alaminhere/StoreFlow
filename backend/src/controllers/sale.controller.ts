@@ -255,6 +255,18 @@ export const createSale = async (
         },
       });
 
+      if (data.paid && Number(data.paid) > 0) {
+        await tx.salePayment.create({
+          data: {
+            storeId,
+            customerId: data.customerId,
+            saleId: saleId,
+            amount: data.paid,
+            paymentMethod: data.paymentMethod,
+          },
+        });
+      }
+
       await tx.saleItem.createMany({ data: saleItems });
 
       await tx.stockMovement.createMany({
@@ -270,7 +282,6 @@ export const createSale = async (
           };
         }),
       });
-
       return sale;
     });
 

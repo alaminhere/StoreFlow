@@ -5,10 +5,21 @@ import {
   createReturn,
   getAllReturns,
 } from '../controllers/return.controller.js';
+import authorization from '../authentication/authorization.js';
 
 const returnRouters = express.Router();
 
-returnRouters.post('/', authentication, createReturn);
-returnRouters.get('/', authentication, getAllReturns);
+returnRouters.post(
+  '/',
+  authentication,
+  authorization('RETURNS', 'create'),
+  createReturn,
+);
+returnRouters.get(
+  '/',
+  authentication,
+  authorization('RETURNS', 'view'),
+  getAllReturns,
+);
 
 export default returnRouters;

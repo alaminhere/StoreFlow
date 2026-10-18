@@ -34,8 +34,7 @@ export const VIEW_ACCESS: Record<Role, string[]> = {
     'SUPPLIERS',
     'CUSTOMERS',
     'POS',
-    'SALES_HISTORY',
-    'RETURNS',
+    'SALES_HISTORY', 
     'NOTIFICATIONS',
   ],
 };

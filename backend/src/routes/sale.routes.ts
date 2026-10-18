@@ -19,7 +19,7 @@ saleRouters.get(
 saleRouters.get(
   '/:id',
   authentication,
-  authorization('SALES_HISTORY', 'view'),
+  authorization('RETURNS', 'create'),
   getSaleForReturn,
 );
 

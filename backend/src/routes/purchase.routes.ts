@@ -19,7 +19,7 @@ purchaseRouters.get(
 purchaseRouters.get(
   '/:id',
   authentication,
-  authorization('PURCHASES', 'view'),
+  authorization('RETURNS', 'create'),
   getPurchaseForReturn,
 );
 

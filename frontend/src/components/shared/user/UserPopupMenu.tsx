@@ -1,16 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import {
-  User,
-  Settings,
-  LogOut,
-  ChevronDown,
-  Package,
-  Eye,
-} from '@/helpers/icon/icon';
-import handleAlert from '@/helpers/handleAlert';
-import { useRouter } from 'next/navigation';
-import { useSignOutMutation } from '@/redux/feature/user/authSlice';
-import getApiErrorMessage from '@/helpers/getApiErrorMessage';
+import { User, Settings, ChevronDown, Package, Eye } from '@/helpers/icon/icon';
 import Link from 'next/link';
 import useCurrentUserContext from '@/hooks/useCurrentUserContext';
 import MenuItem from '../MenuItem';
@@ -39,10 +28,8 @@ const UserPopupMenu = ({
   showText?: boolean;
   size?: AvatarSize;
 }) => {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [signOut] = useSignOutMutation();
   const { user, store } = useCurrentUserContext();
 
   useEffect(() => {
@@ -57,18 +44,6 @@ const UserPopupMenu = ({
     };
   }, []);
 
-  const onSignOut = async () => {
-    try {
-      const res = await signOut().unwrap();
-      if (!res) return;
-      handleAlert(res.success, res.message);
-      if (res.success) {
-        router.push('/signin');
-      }
-    } catch (err) {
-      handleAlert(false, getApiErrorMessage(err));
-    }
-  };
   return (
     <div ref={menuRef} className="relative inline-block">
       <button
@@ -138,16 +113,6 @@ const UserPopupMenu = ({
                 />
               </Link>
             )}
-          </div>
-
-          <div className="border-t border-border">
-            <MenuItem
-              onClick={onSignOut}
-              icon={<LogOut size={16} />}
-              label="Sign Out"
-              danger
-              className="py-2.5! text-sm! rounded-none!"
-            />
           </div>
         </div>
       )}

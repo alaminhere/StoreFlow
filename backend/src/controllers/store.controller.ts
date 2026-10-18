@@ -29,9 +29,12 @@ export const currentStore = async (
   next: NextFunction,
 ) => {
   try {
-    const storeId = res.locals.storeId;
     const userId = res.locals.userId;
+    const storeId = res.locals.storeId;
 
+    if (!storeId) {
+      return sendResponse(res, 200, true, 'No store selected');
+    }
     const [store, member, user] = await Promise.all([
       prisma.store.findUnique({
         where: { id: storeId! },
@@ -204,44 +207,126 @@ export const UpdateCurrentStore = async (
  * logo on cloudinary and clears the store
  * cookie
  *-----------------------------------------*/
+// export const deleteCurrentStore = async (
+//   _req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     type Logo = {
+//       url: string;
+//       public_id: string;
+//     };
+
+//     const storeId = res.locals.storeId;
+//     const store = await prisma.store.findUnique({
+//       where: {
+//         id: storeId!,
+//       },
+//       select: {
+//         logo: true,
+//       },
+//     });
+
+//     await prisma.store.delete({
+//       where: {
+//         id: storeId!,
+//       },
+//     });
+//     if (store?.logo) {
+//       const logo = store.logo as Logo;
+//       await deleteCloudinaryImage(logo.public_id);
+//     }
+//     res.clearCookie(COOKIE_NAMES.STORE, clearCookieOptions());
+
+//     return sendResponse(res, 200, true, 'Store deleted successfully');
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const deleteCurrentStore = async (
   _req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    type Logo = {
+    type Image = {
       url: string;
       public_id: string;
     };
 
-    const storeId = res.locals.storeId;
+    const storeId = res.locals.storeId!;
     const store = await prisma.store.findUnique({
-      where: {
-        id: storeId!,
-      },
+      where: { id: storeId },
       select: {
         logo: true,
+        products: {
+          select: { image: true },
+        },
       },
     });
 
-    await prisma.store.delete({
-      where: {
-        id: storeId!,
-      },
-    });
-    if (store?.logo) {
-      const logo = store.logo as Logo;
-      await deleteCloudinaryImage(logo.public_id);
+    if (!store) {
+      return sendResponse(res, 404, false, 'Store not found');
     }
-    res.clearCookie(COOKIE_NAMES.STORE, clearCookieOptions());
 
+    const storeLogoPublicId = (store.logo as Image | null)?.public_id ?? null;
+    const productPublicIds: string[] = store.products
+      .map(p => (p.image as Image | null)?.public_id)
+      .filter((id): id is string => !!id);
+
+    await prisma.$transaction(
+      async tx => {
+        await tx.stockMovement.deleteMany({ where: { storeId } });
+
+        await tx.returnItem.deleteMany({ where: { storeId } });
+        await tx.return.deleteMany({ where: { storeId } });
+
+        await tx.purchasePayment.deleteMany({ where: { storeId } });
+        await tx.salePayment.deleteMany({ where: { storeId } });
+
+        await tx.purchaseItem.deleteMany({ where: { storeId } });
+        await tx.saleItem.deleteMany({ where: { storeId } });
+
+        await tx.purchase.deleteMany({ where: { storeId } });
+        await tx.sale.deleteMany({ where: { storeId } });
+
+        await tx.productSupplier.deleteMany({ where: { storeId } });
+
+        await tx.product.deleteMany({ where: { storeId } });
+
+        await tx.brand.deleteMany({ where: { storeId } });
+        await tx.category.deleteMany({ where: { storeId } });
+
+        await tx.supplier.deleteMany({ where: { storeId } });
+        await tx.customer.deleteMany({ where: { storeId } });
+
+        await tx.storeMember.deleteMany({ where: { storeId } });
+        await tx.counter.deleteMany({ where: { storeId } });
+
+        await tx.store.delete({ where: { id: storeId } });
+      },
+      {
+        timeout: 30_000,
+        maxWait: 10_000,
+      },
+    );
+
+    const cloudinaryDeletes: Promise<unknown>[] = productPublicIds.map(
+      public_id => deleteCloudinaryImage(public_id),
+    );
+    if (storeLogoPublicId) {
+      cloudinaryDeletes.push(deleteCloudinaryImage(storeLogoPublicId));
+    }
+    await Promise.allSettled(cloudinaryDeletes);
+
+    res.clearCookie(COOKIE_NAMES.STORE, clearCookieOptions());
     return sendResponse(res, 200, true, 'Store deleted successfully');
   } catch (error) {
     next(error);
   }
 };
-
 /*-----------------------------------------*
  * opens a store the user is a member of by
  * issuing a fresh store token and swapping

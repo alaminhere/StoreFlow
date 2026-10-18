@@ -9,7 +9,6 @@ import { comparePassword, hashPassword } from '../helpers/password.js';
 import {
   updatePasswordSchema,
   updateProfileSchema,
-  userByEmailSchema,
 } from '../validations/user.validation.js';
 
 /*-----------------------------------------*
@@ -205,17 +204,34 @@ export const updateMyPassword = async (
  * blocked if they still own a store
  *-----------------------------------------*/
 export const deleteMyAccount = async (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
     const userId = res.locals.userId;
+    const { password } = req.body;
+
+    if (!password || typeof password !== 'string') {
+      throw new ApiError(400, 'Password is required to delete your account.');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+
+    if (!user) {
+      throw new ApiError(404, 'User not found.');
+    }
+
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
+      throw new ApiError(400, 'Incorrect password.');
+    }
+
     const ownerStore = await prisma.storeMember.findFirst({
-      where: {
-        userId,
-        role: 'OWNER',
-      },
+      where: { userId, role: 'OWNER' },
     });
 
     if (ownerStore) {
@@ -225,11 +241,7 @@ export const deleteMyAccount = async (
       );
     }
 
-    await prisma.user.delete({
-      where: {
-        id: userId,
-      },
-    });
+    await prisma.user.delete({ where: { id: userId } });
 
     res.clearCookie(COOKIE_NAMES.STORE, clearCookieOptions());
     res.clearCookie(COOKIE_NAMES.AUTH, clearCookieOptions());

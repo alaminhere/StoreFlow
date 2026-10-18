@@ -1,4 +1,9 @@
-export type PaymentMethod = 'CASH' | 'BANK_TRANSFER' | 'BKASH' | 'CARD';
+export type PaymentMethod =
+  | 'CASH'
+  | 'BANK_TRANSFER'
+  | 'BKASH'
+  | 'CARD'
+  | 'RETURN_ADJUSTMENT';
 
 export interface PurchasePayment {
   id: string;

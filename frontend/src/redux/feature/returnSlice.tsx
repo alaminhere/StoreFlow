@@ -21,12 +21,20 @@ export const returnApi = baseApi.injectEndpoints({
      *        create return
      *-------------------------------------*/
     createReturn: build.mutation<CreateResponse, CreateReturnRequest>({
-      query: body => ({
-        url: '/return',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['return', 'product', 'stockMovement', 'inventory'],
+      query: body => ({ url: '/return', method: 'POST', body }),
+      invalidatesTags: (result, error, arg) => [
+        'return',
+        'product',
+        'stockMovement',
+        'inventory',
+        'customer',
+        'supplier',
+        'dashboard',
+        'analytics',
+        ...(arg?.type === 'SALE_RETURN'
+          ? (['sale', 'payment_sale'] as const)
+          : (['purchase', 'payment_purchase'] as const)),
+      ],
     }),
 
     /*----------------------------------------*

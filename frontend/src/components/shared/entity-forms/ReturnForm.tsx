@@ -118,6 +118,11 @@ const ReturnForm = ({ open, setOpen }: Props) => {
       0,
     ) ?? 0;
 
+  const dueAmount = reference?.due ?? 0;
+  const adjustedDue = dueAmount > 0 ? Math.min(dueAmount, refund) : 0;
+  const cashRefund = refund - adjustedDue;
+  const remainingDue = dueAmount - adjustedDue;
+
   const isSubmitValid = selected.length > 0 && isQtyValid;
   const onSubmit = async (data: ReturnFormValues) => {
     if (!reference || !isSubmitValid) return;
@@ -144,7 +149,11 @@ const ReturnForm = ({ open, setOpen }: Props) => {
   return (
     <>
       {open && (
-        <PopupModal onClose={() => setOpen(false)} label={'Add New Return'}>
+        <PopupModal
+          onClose={() => setOpen(false)}
+          label={'Add New Return'}
+          className="max-w-200!"
+        >
           <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
             <div className="space-y-3 rounded-lg border border-border p-4">
               <div className="flex gap-6">
@@ -199,40 +208,39 @@ const ReturnForm = ({ open, setOpen }: Props) => {
             {reference && (
               <>
                 {/* party information */}
-                <div className="rounded-lg border border-border p-4">
-                  <h4>Member Information</h4>
+                <h4>Party Information</h4>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border border-border p-3.5">
                   <div>
-                    <div className="mt-2 flex items-center gap-4">
-                      <span className="w-10 p12">Name</span>
-                      <span className="p14 text-text">
-                        {reference.party.name}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="w-10 p12">Email</span>
-                      <span className="p14 text-text">
-                        {reference.party.phone}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="w-10 p12">Total</span>
-                      <span className="p14 text-text">
-                        {formatPrice(reference.total)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 ">
-                      <span className="w-10 p12 text-primary">due</span>
-                      <span className="p14  text-primary">
-                        {formatPrice(reference.due)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="w-10 p12">Date</span>
+                    <dt className="p12">Name</dt>
+                    <dd className="line-clamp-1 p14 font-medium text-text">
+                      {reference.party.name}
+                    </dd>
+                  </div>
 
-                      <span className="p14 text-text">
-                        {formatDate(reference.createdAt)}
-                      </span>
-                    </div>
+                  <div>
+                    <dt className="p12">Phone</dt>
+                    <dd className="p14 text-text">{reference.party.phone}</dd>
+                  </div>
+
+                  <div>
+                    <dt className="p12">Date</dt>
+                    <dd className="p14 text-text">
+                      {formatDate(reference.createdAt)}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt className="p12">Total</dt>
+                    <dd className="p14 text-text">
+                      {formatPrice(reference.total)}
+                    </dd>
+                  </div>
+
+                  <div className="col-span-2 flex items-center justify-between border-t border-border pt-3">
+                    <dt className="p14 text-primary">Due</dt>
+                    <dd className="text-base font-semibold text-primary">
+                      {formatPrice(reference.due)}
+                    </dd>
                   </div>
                 </div>
 
@@ -348,9 +356,45 @@ const ReturnForm = ({ open, setOpen }: Props) => {
                   </div>
                 </div>
                 {/* Summary */}
-                <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                  <p>Items selected: {selected.length}</p>
-                  <p className="text-primary">Refund: {formatPrice(refund)}</p>
+
+                <div className="space-y-2 rounded-lg border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="p14">Items selected: {selected.length}</p>
+                    <p className="p14 font-medium text-primary">
+                      Refund: {formatPrice(refund)}
+                    </p>
+                  </div>
+
+                  {adjustedDue > 0 && (
+                    <>
+                      <div className="flex items-center justify-between border-t border-border pt-2">
+                        <p className="p14 text-text-muted">Adjust with Due</p>
+                        <p className="p14 font-medium text-warning">
+                          − {formatPrice(adjustedDue)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <p className="p14 font-semibold text-success">
+                          Cash Refund
+                        </p>
+                        <p className="p14 font-semibold text-success">
+                          {formatPrice(cashRefund)}
+                        </p>
+                      </div>
+
+                      {remainingDue > 0 && (
+                        <div className="flex items-center justify-between border-t border-border pt-2">
+                          <p className="p14 text-text-muted">
+                            Remaining Due after return
+                          </p>
+                          <p className="p14 text-danger">
+                            {formatPrice(remainingDue)}
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
                 <div className="flex justify-end gap-3">
                   <Button type="button" size="md" onClick={resetSearch}>

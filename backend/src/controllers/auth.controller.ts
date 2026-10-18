@@ -357,10 +357,6 @@ export const signout = async (
   next: NextFunction,
 ) => {
   try {
-    const token = req.cookies[COOKIE_NAMES.AUTH];
-    if (!token) {
-      throw new ApiError(401, 'Authentication required!');
-    }
     res.clearCookie(COOKIE_NAMES.STORE, clearCookieOptions());
     res.clearCookie(COOKIE_NAMES.AUTH, clearCookieOptions());
     return sendResponse(res, 200, true, 'Signed out successfully');

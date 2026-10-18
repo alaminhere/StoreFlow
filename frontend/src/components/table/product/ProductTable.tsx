@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 
 import Checkbox from '../../ui/Checkbox';
-import ProductAvatar from './ProductAvatar';
 import ActionMenu from '../ActionMenu';
 
 import Td from '../Td';
@@ -9,10 +8,19 @@ import Th from '../Th';
 import Tr from '../Tr';
 
 import formatPrice from '@/helpers/formatPrice';
-import { Eye, ArrowUpDown, History, Pencil, Trash2,Truck } from '@/helpers/icon/icon';
+import {
+  Eye,
+  ArrowUpDown,
+  History,
+  Pencil,
+  Trash2,
+  Truck,
+  Box,
+} from '@/helpers/icon/icon';
 import getStockStatus, { statusStyles } from '@/helpers/StockStatus';
 import { Product } from '@/types/product.types';
 import MenuItem from '@/components/shared/MenuItem';
+import Image from 'next/image';
 
 const COLUMNS = [
   { label: 'Product', align: 'left' },
@@ -38,8 +46,7 @@ type Props = {
 
   setSelectedProductForEdit: (product: Product | null) => void;
   setIsEditFormOpen: (open: boolean) => void;
-  setProductIdIdForSupplier: (id: string|null) => void
-
+  setProductIdIdForSupplier: (id: string | null) => void;
 };
 
 const ProductTable = ({
@@ -53,7 +60,7 @@ const ProductTable = ({
   setProductIdForHistory,
   setSelectedProductForEdit,
   setIsEditFormOpen,
-  setProductIdIdForSupplier
+  setProductIdIdForSupplier,
 }: Props) => {
   return (
     <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-border">
@@ -95,9 +102,26 @@ const ProductTable = ({
                     onChange={() => toggleOne(product?.id)}
                   />
                 </Td>
-
                 <Td>
-                  <ProductAvatar name={product?.name} id={product?.id} />
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-sidebar-active-bg">
+                      {product?.image?.url ? (
+                        <Image
+                          src={product.image.url}
+                          alt={product.image.public_id}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <Box size={14} className="text-sidebar-text" />
+                      )}
+                    </div>
+                    <div>
+                      <h4>{product?.name}</h4>
+                      <p className="p12">{product?.id}</p>
+                    </div>
+                  </div>
                 </Td>
                 <Td>{product?.sku}</Td>
                 <Td>{product?.category.name}</Td>
@@ -114,14 +138,13 @@ const ProductTable = ({
                     className={clsx(
                       'inline-flex whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium',
                       statusStyles[
-                      getStockStatus(
-                        product?.stock,
-                        product?.minimumStockLevel,
-                      )
+                        getStockStatus(
+                          product?.stock,
+                          product?.minimumStockLevel,
+                        )
                       ],
                     )}
                   >
-
                     {getStockStatus(product?.stock, product?.minimumStockLevel)}
                   </span>
                 </Td>

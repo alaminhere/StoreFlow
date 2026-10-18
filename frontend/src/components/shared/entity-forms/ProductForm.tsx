@@ -148,6 +148,7 @@ const ProductForm = ({ product, setOpen, open }: Props) => {
       if (!res) return;
       if (res.success) {
         reset();
+        setPrevUrls(null);
         setOpen(false);
       }
       handleAlert(res.success, res.message);

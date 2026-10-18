@@ -253,6 +253,17 @@ export const createPurchases = async (
         },
       });
 
+      if (Number(data.paid) > 0) {
+        await tx.purchasePayment.create({
+          data: {
+            storeId,
+            supplierId: data.supplierId,
+            purchaseId,
+            amount: data.paid,
+            paymentMethod: data.paymentMethod,
+          },
+        });
+      }
       await tx.purchaseItem.createMany({ data: purchaseItems });
 
       await tx.stockMovement.createMany({

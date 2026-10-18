@@ -37,6 +37,7 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   'BKASH',
   'CASH',
   'CARD',
+  'RETURN_ADJUSTMENT',
 ];
 
 const styles = {

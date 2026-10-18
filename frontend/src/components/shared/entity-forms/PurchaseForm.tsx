@@ -24,6 +24,7 @@ const paymentMethods: PaymentMethod[] = [
   'BKASH',
   'BANK_TRANSFER',
   'CARD',
+  'RETURN_ADJUSTMENT',
 ];
 
 const styles = {
