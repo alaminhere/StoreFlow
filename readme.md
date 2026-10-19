@@ -1,4 +1,4 @@
-<div align="left">
+ <div align="left">
 
 # StoreFlow
 
@@ -18,7 +18,7 @@ A multi-store inventory, POS and invoicing platform with role-based access, real
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-![StoreFlow overview](/frontend/public/storeFlow_overview_v1.webp)
+![StoreFlow overview](frontend/public/storeFlow_overview_v1.webp)
 
 </div>
 
@@ -26,78 +26,119 @@ A multi-store inventory, POS and invoicing platform with role-based access, real
 
 ## Live Demo
 
-**https://storeflow.alaminhere.com**
+**[https://storeflow.alaminhere.com/](https://storeflow.alaminhere.com/)**
 
 Explore the full system without signing up. Use the demo account below:
 
-| Field    | Value              |
-| -------- | ------------------ |
-| Email    | `demo@example.com` |
-| Password | `12345`            |
+| Field | Value |
+|---|---|
+| Email | `demo@example.com` |
+| Password | `12345` |
 
 After signing in, you will land on the **Store List**. Pick a store to continue:
 
-| Store       | Role    | Access                        |
-| ----------- | ------- | ----------------------------- |
-| **Store A** | Owner   | Full access to every module   |
-| **Store B** | Manager | Limited, role-based access    |
+| Store | Role | Access |
+|---|---|---|
+| **Store A** | Owner | Full access to every module |
+| **Store B** | Manager | Limited, role-based access |
 
 Switch stores anytime from the user menu to see how the menus, permissions and dashboard change with each store and role.
 
 ---
 
-## Features
+## 🧠 Engineering Challenges & Solutions
 
-### Inventory and Sales
+Building a multi-tenant SaaS platform required solving complex architectural and business logic problems. Here are some of the key technical challenges faced during development and how they were resolved:
 
-- Manage inventory across multiple stores and warehouses
-- Organize products with categories, brands, images, pricing and stock levels
-- Sell faster with a point of sale that updates stock in real time
-- Spot low-stock and out-of-stock items at a glance
-- Generate PDF invoices and email them to customers and suppliers
-- Track sales and inventory with analytics dashboards
+**1. Multi-Tenant Data Isolation (ID Collision)**
+*   **Challenge:** Initially, custom IDs (e.g., `RET_001`, `SALE_001`) were used as the global Primary Key. This caused constraint errors when two different stores tried to generate the same custom ID.
+*   **Solution:** Migrated to **Prisma Composite Primary Keys** (`@@id([storeId, id])`). This ensured strict data isolation, allowing multiple tenants to have the same custom ID format without conflicts, while keeping queries highly optimized.
 
-### Multi-Tenant and Access Control
+**2. Complex Accounting Logic (Automated Due Adjustment)**
+*   **Challenge:** When a customer returns a product, they might have an existing "Due" (unpaid balance) on a previous sale. Simply refunding cash would result in a loss, as the customer still owes money.
+*   **Solution:** Engineered a custom algorithm to calculate `min(dueAmount, refundAmount)`. Created a dedicated `RETURN_ADJUSTMENT` payment method. The system now intelligently offsets the refund against the old due first, and only refunds the remaining balance in cash, keeping the financial ledger 100% accurate.
 
-- Run many stores from one account with a quick store switcher
-- Control access with roles: Owner, Manager, Admin and Salesman
-- Menus, permissions and dashboards adapt to the selected store and role
+**3. ACID Transactions & Race Conditions**
+*   **Challenge:** Fetching stock levels outside a database transaction led to "Race Conditions" (e.g., two users buying the last item simultaneously), risking negative stock and inaccurate stock movement logs.
+*   **Solution:** Wrapped all inventory updates inside `prisma.$transaction`. Implemented atomic `updateMany` operations with `stock: { gte: quantity }` constraints. If the stock drops below the requested amount mid-transaction, the entire process rolls back safely.
 
-### Authentication and Security
+**4. Real-Time Cache Invalidation Across Devices**
+*   **Challenge:** When a sale or return occurred, related data (customer dues, payment ledgers, and dashboard analytics) remained stale on other active devices (e.g., a manager's dashboard).
+*   **Solution:** Built a custom `socketTagMap` integrated with **Socket.IO** and **RTK Query**. When a mutation occurs, the backend emits targeted Socket events, instantly invalidating specific RTK Query cache tags on all connected clients for a zero-reload, real-time experience.
 
-- Secure sign-in with JWT and protected cookies
-- Passwords hashed with bcrypt
-- Email verification and password reset powered by Resend
-- Every API input validated with Zod
-- Rate limiting, with dedicated limiters for login, email and password routes
-- CORS locked to the production client origin
+**5. Missing Initial Payment Ledger**
+*   **Challenge:** While partial payments (advance payments) were saved to the main Sale/Purchase table, they were not being recorded in the dedicated `Payment` tables. This caused discrepancies in the payment history UI.
+*   **Solution:** Implemented conditional transactional logic to create a `salePayment` or `purchasePayment` record if `paid > 0` during the initial creation. This ensured the financial ledger was comprehensive and accurate from day one.
 
-### Experience
+---
+##  Current Features
 
-- Real-time, two-way updates with Socket.IO
-- Image upload and optimized delivery through Cloudinary
-- Light and dark themes
-- Responsive layout from phone to desktop
-- Smooth forms with React Hook Form, plus clear loading, error and empty states
+### 🏦 1. Accounting, Finance & Payments
+
+-  **Smart Return & Due Adjustment:** Automatically adjust refunds against existing customer/supplier dues.
+- **Partial & Split Payments:** Support for multiple payment methods (Cash, bKash, Bank, Card) with partial payment tracking.
+- **Profit Tracking:** Real-time calculation of Gross Profit and Net Profit with period-over-period comparison.
+- **Financial Analytics:** Track total sales, total purchases, and stock valuation in real-time.
+- **Subscription & Billing Plans:** Built-in tiered plans for SaaS billing.
+- **Usage Limits & Quotas:** Restrict stores based on plan limits.
+
+### 📦 2. Advanced Inventory & Stock
+
+- **Stock Movement Ledger:** Complete, auditable history of every stock IN/OUT with reason tracking.
+- **Auto Stock Updates:** Stock levels automatically increment on purchases and decrement on sales/returns.
+- **Low & Out of Stock Alerts:** Dashboard cards and visual warnings for items hitting minimum stock levels.
+- **Barcode Integration:** Add, manage, and scan product barcodes for fast POS checkout.
+- **Soft Delete & Auto-Restore:** Safely delete and restore products, categories, and brands without losing historical data.
+
+### 🛒 3. Sales, POS & CRM
+
+- **Flexible Pricing & Discounts:** Sell the same product at different prices (wholesale/retail) with custom discounts applied at POS.
+- **PDF Invoice Generation (Email):** Download and email professional invoices directly to customers and suppliers.
+- **Sales Overview:** Track total sales, purchases, and revenue trends over the last 6 months.
+- **Category-wise Analytics:** Visual donut chart showing sales distribution across different product categories.
+
+### 🏢 4. Multi-Tenancy & Access Control
+
+- **Global User System:** One account can manage and switch between multiple stores seamlessly.
+- **Role-Based Access Control (RBAC):** Granular permissions for Owner, Admin, Manager, and Salesman.
+- **Composite Key Isolation:** True multi-tenant data isolation using `storeId + id` composite primary keys.
+- **Dynamic Dashboard:** Metrics and charts automatically update based on the selected store and time filter.
+
+### 🔐 5. System, Security & Audit
+
+- **Real-Time Updates:** Instant data sync across all active devices using Socket.IO.
+- **Automated Database Backup:** Daily automated DB backups with download option.
+- **Two-Factor Authentication (2FA):** Enhanced security with OTP or Google Authenticator support.
+- **Advanced Data Filtering:** Dashboard filters for Today, Yesterday, Last 7 Days, Last 30 Days, Last Month, and This Year.
+
+### 📊 6. Advanced Analytics
+
+- **Interactive Dashboard:** Live KPI cards for Total Sales, Purchases, Gross/Net Profit, Total Products, Stock Value, Customers, and Suppliers.
+- **Visual Reports:** Beautiful line charts and donut charts powered by Chart.js.
+- **Movement Analysis:** Deep-dive into inventory flow and stock adjustments.
 
 ---
 
 ## Tech Stack
 
-| Frontend                  | Backend and Services            |
-| ------------------------- | ------------------------------- |
-| Next.js 16 (App Router)   | Node.js and Express 5           |
-| React 19                  | Prisma ORM with MariaDB adapter |
-| TypeScript                | MySQL / MariaDB                 |
-| Tailwind CSS 4            | Socket.IO                       |
-| Redux Toolkit / RTK Query | JWT and bcrypt                  |
-| React Hook Form           | Zod                             |
-| Chart.js                  | express-rate-limit and CORS     |
-| jsPDF and jsPDF AutoTable | Cloudinary and Multer           |
-| next-themes               | Resend                          |
-| SweetAlert2               | Slugify and Day.js              |
+| Frontend | Backend and Services |
+|---|---|
+| Next.js 16 (App Router) | Node.js and Express 5 |
+| React 19 | Prisma ORM with MariaDB adapter |
+| TypeScript | MySQL / MariaDB |
+| Tailwind CSS 4 | Socket.IO |
+| Redux Toolkit / RTK Query | JWT and bcrypt |
+| React Hook Form | Zod |
+| Chart.js | express-rate-limit and CORS |
+| jsPDF and jsPDF AutoTable | Cloudinary and Multer |
+| next-themes | Resend |
+| SweetAlert2 | Slugify and Day.js |
 
 ---
+
+
+
+
 
 ## Architecture
 
@@ -216,24 +257,22 @@ CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 
-JWT_SECRET=
-```
 
-> **Note:** `JWT_SECRET` must be the same in the frontend and the backend.
+```
 
 ---
 
 ## Scripts
 
-| Location   | Command         | Description                          |
-| ---------- | --------------- | ------------------------------------ |
-| `backend`  | `npm run dev`   | Start the API with hot reload (tsx)  |
-| `backend`  | `npm run build` | Generate the Prisma client and build |
-| `backend`  | `npm start`     | Run the production build             |
-| `frontend` | `npm run dev`   | Start the Next.js dev server         |
-| `frontend` | `npm run build` | Create a production build            |
-| `frontend` | `npm start`     | Serve the production build           |
-| `frontend` | `npm run lint`  | Run ESLint                           |
+| Location | Command | Description |
+|---|---|---|
+| `backend` | `npm run dev` | Start the API with hot reload (tsx) |
+| `backend` | `npm run build` | Generate the Prisma client and build |
+| `backend` | `npm start` | Run the production build |
+| `frontend` | `npm run dev` | Start the Next.js dev server |
+| `frontend` | `npm run build` | Create a production build |
+| `frontend` | `npm start` | Serve the production build |
+| `frontend` | `npm run lint` | Run ESLint |
 
 ---
 
