@@ -23,7 +23,7 @@ const InvoiceSetting = ({ store }: { store: Store }) => {
 
     const payload = {
       invoiceFooterNote,
-    }; 
+    };
     try {
       const res = await updateStore(payload).unwrap();
       if (!res) return;
@@ -32,6 +32,7 @@ const InvoiceSetting = ({ store }: { store: Store }) => {
       handleAlert(false, getApiErrorMessage(err));
     }
   };
+  console.log(store);
 
   return (
     <form onSubmit={onSubmit}>
@@ -91,7 +92,7 @@ const InvoiceSetting = ({ store }: { store: Store }) => {
           placeholder="Thank you for your business!"
           name="invoiceFooterNote"
           defaultValue={
-            store?.invoiceFooterNote.trim() || 'Thank you for your business!'
+            store?.invoiceFooterNote?.trim() || 'Thank you for your business!'
           }
         />
         <Button
