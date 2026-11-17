@@ -4,7 +4,7 @@ import config from '../config/config.js';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { PrismaClient } from '../generated/prisma/client.js';
 
-const caPath = path.resolve(process.cwd(), 'certs/ca.pem');
+const caPath = path.resolve(process.cwd(), 'certs/tidb-ca.pem');
 
 const adapter = new PrismaMariaDb({
   user: config.database.user,
