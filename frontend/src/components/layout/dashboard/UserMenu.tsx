@@ -61,7 +61,8 @@ const UserMenu = () => {
       if (!res) return;
       handleAlert(res.success, res.message);
       if (res.success) {
-        router.push('/signin');
+        router.replace('/signin');
+        router.refresh();
       }
     } catch (err) {
       handleAlert(false, getApiErrorMessage(err));
