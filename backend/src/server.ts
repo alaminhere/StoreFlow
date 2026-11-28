@@ -13,7 +13,7 @@ import { errorConverter, errorHandler } from './middlewares/errorHandler.js';
 const app = express();
 
 if (config.env === 'production') {
-  app.set('trust proxy', 1);
+  app.set('trust proxy',   1);
 }
 
 app.use(
@@ -45,8 +45,8 @@ connectDB()
     initSocket(server);
 
     server.listen(config.port, () => {
-      console.log(`Server is  running  :: http://localhost:${config.port}`);
-      console.log(`Environment :: ${config.env}`);
+        console.log(`Server is  running  :: http://localhost:${config.port}`);
+        console.log(`Environment :: ${config.env}`);
     });
   })
   .catch(error => {

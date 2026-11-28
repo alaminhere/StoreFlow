@@ -38,7 +38,8 @@ const FromVerification = () => {
         if (!res.success) return;
 
         if (res.success) {
-          router.push('/profile');
+          router.replace('/profile');
+          router.refresh();
         }
         handleAlert(res.success, res.message);
       } else {

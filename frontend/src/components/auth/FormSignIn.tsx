@@ -34,7 +34,8 @@ const FormSignIn = () => {
 
       handleAlert(res.success, res.message);
       if (res.success) {
-        router.push('/profile');
+        router.replace('/profile');
+        router.refresh();
       }
     } catch (err) {
       handleAlert(false, getApiErrorMessage(err));
